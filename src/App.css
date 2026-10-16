@@ -1,0 +1,36 @@
+/* ── Main Content ──────────────────────────────────────────── */
+.main-content {
+  min-height: 100vh;
+  position: relative;
+  z-index: 10;
+  opacity: 1;
+}
+
+.main-content.hidden {
+  display: none !important;
+}
+
+/* Placeholder section — will be replaced */
+.placeholder-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  text-align: center;
+  padding: 2rem;
+  gap: 1rem;
+}
+
+.placeholder-section h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.placeholder-section p {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  max-width: 500px;
+  line-height: 1.7;
+}

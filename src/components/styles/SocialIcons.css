@@ -1,0 +1,64 @@
+/* ===================================================================
+   SOCIAL ICONS SIDEBAR & RESUME (Matching Reference)
+   =================================================================== */
+
+.social-sidebar {
+  position: fixed;
+  bottom: 2.5rem;
+  left: 5vw;
+  right: 5vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  z-index: 90;
+  pointer-events: none;
+}
+
+.social-links {
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+  pointer-events: auto;
+}
+
+.social-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #7b7b85;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  width: 24px;
+  height: 24px;
+}
+
+.social-icon-btn:hover {
+  color: #ffffff;
+  transform: translateY(-2px) scale(1.15);
+}
+
+.resume-link-btn {
+  pointer-events: auto;
+  font-family: var(--font-text, 'Space Grotesk', sans-serif);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: #7b7b85;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: color 0.25s ease, transform 0.25s ease;
+  text-decoration: none;
+}
+
+.resume-link-btn:hover {
+  color: #ffffff;
+  transform: translateX(2px);
+}
+
+@media (max-width: 768px) {
+  .social-sidebar {
+    bottom: 1.5rem;
+    left: 4vw;
+    right: 4vw;
+  }
+}

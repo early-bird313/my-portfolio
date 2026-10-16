@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Production build
+dist/
+
+# Environment / local
+*.local
+.env
+.env.*
+
+# Logs & temp reference
+*.log
+temp_portfolio_reference/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+*.tsbuildinfo

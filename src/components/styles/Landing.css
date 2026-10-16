@@ -1,0 +1,212 @@
+/* ===================================================================
+   LANDING HERO SECTION (Matching Reference Screenshot)
+   =================================================================== */
+
+.landing-section {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  background-color: var(--bg, #0a0a0c);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Floating Atmospheric Orbs ── */
+.landing-orb-1 {
+  position: fixed;
+  top: 10%;
+  left: 18%;
+  width: 220px;
+  height: 220px;
+  background: radial-gradient(circle, rgba(168, 124, 255, 0.45) 0%, rgba(120, 60, 255, 0.15) 50%, transparent 70%);
+  filter: blur(45px);
+  border-radius: 50%;
+  z-index: 2;
+  pointer-events: none;
+  animation: orbFloat1 8s ease-in-out infinite alternate;
+}
+
+.landing-orb-2 {
+  position: fixed;
+  top: 45%;
+  right: 5%;
+  width: 320px;
+  height: 320px;
+  background: radial-gradient(circle, rgba(204, 255, 0, 0.18) 0%, rgba(168, 124, 255, 0.1) 45%, transparent 70%);
+  filter: blur(55px);
+  border-radius: 50%;
+  z-index: 2;
+  pointer-events: none;
+  animation: orbFloat2 10s ease-in-out infinite alternate;
+}
+
+@keyframes orbFloat1 {
+  0% { transform: translate(0, 0) scale(0.95); }
+  100% { transform: translate(25px, -20px) scale(1.08); }
+}
+
+@keyframes orbFloat2 {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(-30px, 20px) scale(1.12); }
+}
+
+/* ── Landing Container ── */
+.landing-container {
+  position: relative;
+  width: 100%;
+  max-width: 1600px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 5vw;
+  z-index: 10;
+}
+
+/* ── Left Hero Headline: Hi, I'm Minhaj Ahmed Pabel ── */
+.landing-intro {
+  position: absolute;
+  left: 6vw;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-tag {
+  font-family: var(--font-text, 'Space Grotesk', sans-serif);
+  font-size: 1.15rem;
+  font-weight: 400;
+  color: #c4b5fd;
+  margin-bottom: 0.6rem;
+  letter-spacing: 0.05em;
+  display: block;
+}
+
+.landing-name {
+  font-family: var(--font-title, 'Bebas Neue', sans-serif);
+  font-size: clamp(2.6rem, 4.2vw, 4.6rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  text-shadow: 0 4px 40px rgba(0, 0, 0, 0.9);
+}
+
+.landing-name .name-row {
+  display: block;
+}
+
+.landing-name .highlight-pabel {
+  color: #ffffff;
+}
+
+/* ── Center: Interactive 3D Cartoon Character Model ── */
+.landing-center-visual {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: min(720px, 60vw);
+  height: 85vh;
+  z-index: 15;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  pointer-events: none;
+}
+
+/* ── Right Hero Headline: Creative AI Engineer ── */
+.landing-info {
+  position: absolute;
+  right: 6vw;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.landing-role {
+  font-family: var(--font-title, 'Bebas Neue', sans-serif);
+  font-size: clamp(2.6rem, 4.2vw, 4.6rem);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: 0.04em;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-role .role-row {
+  display: block;
+}
+
+.landing-role .role-creative {
+  color: #ffffff;
+  text-shadow: 0 4px 40px rgba(0, 0, 0, 0.9);
+}
+
+.landing-role .role-engineer {
+  color: var(--accent, #ccff00);
+  text-shadow: 0 0 35px rgba(204, 255, 0, 0.5),
+               0 0 70px rgba(204, 255, 0, 0.25);
+}
+
+/* ── Responsive Adaptations ── */
+@media (max-width: 1024px) {
+  .landing-container {
+    flex-direction: column;
+    justify-content: space-around;
+    padding: 6rem 5vw 4rem;
+  }
+
+  .landing-intro {
+    position: relative;
+    left: auto;
+    top: auto;
+    transform: none;
+    text-align: center;
+  }
+
+  .landing-center-visual {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    width: min(440px, 80vw);
+    height: 48vh;
+  }
+
+  .landing-info {
+    position: relative;
+    right: auto;
+    top: auto;
+    transform: none;
+    text-align: center;
+  }
+}
+
+@media (max-width: 650px) {
+  .landing-name {
+    font-size: 3.2rem;
+  }
+
+  .landing-role {
+    font-size: 3.2rem;
+  }
+
+  .landing-tag {
+    font-size: 1rem;
+  }
+}
