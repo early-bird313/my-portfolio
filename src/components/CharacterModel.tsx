@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import "./styles/CharacterModel.css";
 
 const CharacterModel = () => {
@@ -27,7 +27,9 @@ const CharacterModel = () => {
     let isCancelled = false;
 
     Promise.all([
+      // @ts-ignore
       import(/* @vite-ignore */ "https://esm.sh/three@0.168.0"),
+      // @ts-ignore
       import(/* @vite-ignore */ "https://esm.sh/three@0.168.0/examples/jsm/loaders/GLTFLoader.js"),
     ])
       .then(([THREE, { GLTFLoader }]) => {

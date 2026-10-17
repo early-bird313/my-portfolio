@@ -57,8 +57,6 @@
 
 @media (max-width: 768px) {
   .social-sidebar {
-    bottom: 1.5rem;
-    left: 4vw;
-    right: 4vw;
+    display: none;
   }
 }

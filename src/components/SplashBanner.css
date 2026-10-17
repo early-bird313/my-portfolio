@@ -495,10 +495,14 @@
   .splash-desktop-gradient {
     background: linear-gradient(
       to bottom,
-      rgba(10, 10, 12, 0.92) 0%,
-      rgba(10, 10, 12, 0.8) 50%,
-      rgba(10, 10, 12, 0.95) 100%
+      rgba(10, 10, 12, 0.95) 0%,
+      rgba(10, 10, 12, 0.88) 50%,
+      rgba(10, 10, 12, 0.98) 100%
     );
+  }
+
+  .splash-desktop-img {
+    opacity: 0.3 !important;
   }
 
   .splash-hero {
@@ -511,35 +515,48 @@
   .hero-content {
     align-items: center;
     max-width: 100%;
+    text-align: center;
+  }
+
+  .splash-ideas-title {
+    align-items: center;
+    text-align: center;
   }
 
   .title-text {
-    font-size: clamp(3.8rem, 12vw, 6rem);
+    font-size: clamp(3rem, 10vw, 5rem);
+    text-align: center;
   }
 }
 
 @media (max-width: 650px) {
+  .splash-desktop-img {
+    opacity: 0.2 !important;
+  }
+
   .title-text {
-    font-size: 3.4rem;
+    font-size: clamp(2.2rem, 9.5vw, 3.2rem);
+    line-height: 0.95;
+    text-align: center;
   }
 
   .hero-subtitle {
-    font-size: 1.02rem;
+    font-size: 0.95rem;
   }
 
   .loading-capsule-pill {
-    min-width: 230px;
-    height: 48px;
-    padding: 0 20px;
+    min-width: 210px;
+    height: 44px;
+    padding: 0 16px;
   }
 
   .pill-state-loading {
-    font-size: 0.84rem;
-    gap: 8px;
+    font-size: 0.8rem;
+    gap: 6px;
   }
 
   .pill-state-welcome {
-    font-size: 0.88rem;
-    letter-spacing: 0.16em;
+    font-size: 0.84rem;
+    letter-spacing: 0.12em;
   }
 }

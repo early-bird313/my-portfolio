@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
-import { config } from "../config";
+import { useEffect, useRef, useState } from "react";
 import "./SplashBanner.css";
 
 interface SplashBannerProps {

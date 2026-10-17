@@ -1,4 +1,4 @@
-import React, { PropsWithChildren } from "react";
+import { PropsWithChildren } from "react";
 import CharacterModel from "./CharacterModel";
 import "./styles/Landing.css";
 
