@@ -150,14 +150,6 @@ const Journey = () => {
                   <h3 className="spotlight-title">{currentItem.title}</h3>
                   <p className="spotlight-desc">{currentItem.description}</p>
 
-                  <div className="spotlight-tags-wrap">
-                    {currentItem.tags.map((tag, tIdx) => (
-                      <span className="spotlight-tag" key={tIdx}>
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
                   {/* Subtle Scroll Hint */}
                   <div className="spotlight-scroll-indicator">
                     <span className="indicator-pulse" />

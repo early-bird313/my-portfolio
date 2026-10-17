@@ -689,11 +689,6 @@ const Journey=()=>{
                 ]}),
                 T.jsx("h3",{className:"spotlight-title",children:currentItem.title}),
                 T.jsx("p",{className:"spotlight-desc",children:currentItem.desc}),
-                T.jsx("div",{className:"spotlight-tags-wrap",children:
-                  currentItem.tags.map((tag,tIdx)=>
-                    T.jsx("span",{key:tIdx,className:"spotlight-tag",children:tag})
-                  )
-                }),
                 T.jsxs("div",{className:"spotlight-scroll-indicator",children:[
                   T.jsx("span",{className:"indicator-pulse"}),
                   activeIndex<journeyData.length-1?
