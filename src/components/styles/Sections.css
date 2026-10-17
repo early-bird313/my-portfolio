@@ -846,19 +846,65 @@
 
 @media (max-width: 900px) {
   .journey-scroll-section {
-    min-height: auto;
+    min-height: 260vh;
+    position: relative;
+    padding-top: 0;
+    padding-bottom: 0;
   }
   .journey-inner-sticky {
-    position: static;
-    min-height: auto;
-    padding-top: 2rem;
+    position: sticky;
+    top: 75px;
+    min-height: calc(100vh - 85px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 1rem;
+    padding-bottom: 1.5rem;
+    z-index: 20;
   }
   .journey-grid-layout {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 1.2rem;
   }
   .journey-sculpture-anchor {
     display: none;
+  }
+  .journey-header-wrap {
+    margin-bottom: 1.2rem;
+  }
+  .journey-spotlight-side {
+    max-width: 100%;
+    margin-left: 0;
+  }
+  .journey-vertical-layout {
+    grid-template-columns: 55px 1fr;
+    gap: 1.2rem;
+  }
+  .vertical-nodes-list {
+    min-height: 320px;
+    gap: 0.8rem;
+  }
+  .vertical-node-year {
+    font-size: 1.15rem;
+  }
+  .journey-card-container {
+    min-height: 320px;
+  }
+  .journey-spotlight-card {
+    padding: 1.6rem 1.4rem;
+  }
+  .spotlight-year-number {
+    font-size: 2.8rem;
+  }
+  .spotlight-title {
+    font-size: 1.25rem;
+    line-height: 1.3;
+    margin-bottom: 0.75rem;
+  }
+  .spotlight-desc {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.2rem;
   }
   .about-grid {
     grid-template-columns: 1fr;

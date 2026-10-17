@@ -495,20 +495,22 @@
   .splash-desktop-gradient {
     background: linear-gradient(
       to bottom,
-      rgba(10, 10, 12, 0.95) 0%,
-      rgba(10, 10, 12, 0.88) 50%,
+      rgba(10, 10, 12, 0.15) 0%,
+      rgba(10, 10, 12, 0.35) 45%,
+      rgba(10, 10, 12, 0.85) 75%,
       rgba(10, 10, 12, 0.98) 100%
     );
   }
 
   .splash-desktop-img {
-    opacity: 0.3 !important;
+    opacity: 0.88 !important;
+    object-position: 72% 18% !important;
   }
 
   .splash-hero {
     flex-direction: column;
-    justify-content: center;
-    padding: 3rem 5vw 1rem;
+    justify-content: flex-end;
+    padding: 2rem 5vw 2.5rem;
     text-align: center;
   }
 
@@ -516,6 +518,16 @@
     align-items: center;
     max-width: 100%;
     text-align: center;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(10, 10, 12, 0.75) 0%,
+      rgba(10, 10, 12, 0.45) 60%,
+      transparent 100%
+    );
+    padding: 1rem 1.5rem;
+    border-radius: 20px;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
 
   .splash-ideas-title {
@@ -524,39 +536,49 @@
   }
 
   .title-text {
-    font-size: clamp(3rem, 10vw, 5rem);
+    font-size: clamp(2.4rem, 8.5vw, 4.2rem);
     text-align: center;
+    text-shadow: 0 4px 30px rgba(0, 0, 0, 1), 0 0 40px rgba(0, 0, 0, 0.95);
   }
 }
 
 @media (max-width: 650px) {
   .splash-desktop-img {
-    opacity: 0.2 !important;
+    opacity: 0.92 !important;
+    object-position: 72% 14% !important;
+  }
+
+  .splash-hero {
+    padding: 1rem 4vw 2rem;
+  }
+
+  .hero-content {
+    padding: 0.8rem 1.2rem;
   }
 
   .title-text {
-    font-size: clamp(2.2rem, 9.5vw, 3.2rem);
-    line-height: 0.95;
+    font-size: clamp(2.2rem, 8.8vw, 3.2rem);
+    line-height: 0.98;
     text-align: center;
   }
 
   .hero-subtitle {
-    font-size: 0.95rem;
+    font-size: 0.92rem;
   }
 
   .loading-capsule-pill {
-    min-width: 210px;
-    height: 44px;
-    padding: 0 16px;
+    min-width: 220px;
+    height: 46px;
+    padding: 0 18px;
   }
 
   .pill-state-loading {
-    font-size: 0.8rem;
-    gap: 6px;
+    font-size: 0.82rem;
+    gap: 8px;
   }
 
   .pill-state-welcome {
-    font-size: 0.84rem;
-    letter-spacing: 0.12em;
+    font-size: 0.85rem;
+    letter-spacing: 0.14em;
   }
 }

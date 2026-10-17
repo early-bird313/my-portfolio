@@ -78,13 +78,42 @@ const Journey = () => {
   }, []);
 
   const scrollToYear = (idx: number) => {
+    const clampedIdx = Math.max(0, Math.min(timelineData.length - 1, idx));
+    setActiveIndex(clampedIdx);
     const el = sectionRef.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
     const totalScroll = rect.height - window.innerHeight;
-    const stepSize = totalScroll / timelineData.length;
-    const targetScrollY = window.scrollY + rect.top + (idx + 0.2) * stepSize;
-    window.scrollTo({ top: targetScrollY, behavior: "smooth" });
+    if (totalScroll > 0) {
+      const stepSize = totalScroll / timelineData.length;
+      const targetScrollY = window.scrollY + rect.top + (clampedIdx + 0.15) * stepSize;
+      window.scrollTo({ top: targetScrollY, behavior: "smooth" });
+    }
+  };
+
+  const touchStartX = useRef<number | null>(null);
+  const touchStartY = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    touchStartY.current = e.touches[0].clientY;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null || touchStartY.current === null) return;
+    const deltaX = touchStartX.current - e.changedTouches[0].clientX;
+    const deltaY = touchStartY.current - e.changedTouches[0].clientY;
+    touchStartX.current = null;
+    touchStartY.current = null;
+
+    // Detect horizontal swipe on card
+    if (Math.abs(deltaX) > 40 && Math.abs(deltaX) > Math.abs(deltaY)) {
+      if (deltaX > 0 && activeIndex < timelineData.length - 1) {
+        scrollToYear(activeIndex + 1);
+      } else if (deltaX < 0 && activeIndex > 0) {
+        scrollToYear(activeIndex - 1);
+      }
+    }
   };
 
   const currentItem = timelineData[activeIndex];
@@ -135,7 +164,11 @@ const Journey = () => {
               </div>
 
               {/* Active Year Spotlight Card — Replaced and animated downwards on scroll */}
-              <div className="journey-card-container">
+              <div
+                className="journey-card-container"
+                onTouchStart={handleTouchStart}
+                onTouchEnd={handleTouchEnd}
+              >
                 <div className="journey-spotlight-card" key={currentItem.year}>
                   <div className="spotlight-top-bar">
                     <div className="spotlight-year-wrap">
