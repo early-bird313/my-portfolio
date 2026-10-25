@@ -124,20 +124,11 @@ const Contact = () => {
               />
             </div>
 
-            {/* 2. Available for Projects Pill */}
+            {/* 2. Available for projects */}
             <div className="profile-status-badge">
               <span className="status-pulse-dot" />
-              <span className="status-text">Available for Projects</span>
+              <span className="status-text">Available for projects</span>
             </div>
-
-            {/* 3. Name */}
-            <h3 className="profile-name">Minhaj Ahmed Pabel</h3>
-
-            {/* 4. Direct Email */}
-            <a href="mailto:pabelminhajahmed@gmail.com" className="profile-direct-mail-btn">
-              <span>pabelminhajahmed@gmail.com</span>
-              <span className="mail-arrow">↗</span>
-            </a>
           </div>
         </div>
       </div>
