@@ -39,12 +39,19 @@ const WhatsAppWidget = () => {
       },
     ]);
 
-    // Show friendly prompt badge after 3 seconds
+    // Show friendly prompt badge after 3 seconds, auto-hide after 5 seconds
+    let hideTimer: ReturnType<typeof setTimeout>;
     const tooltipTimer = setTimeout(() => {
       setShowTooltip(true);
+      hideTimer = setTimeout(() => {
+        setShowTooltip(false);
+      }, 5000);
     }, 3000);
 
-    return () => clearTimeout(tooltipTimer);
+    return () => {
+      clearTimeout(tooltipTimer);
+      clearTimeout(hideTimer);
+    };
   }, [waConfig.welcomeMessage]);
 
   // Auto-scroll chat body on new message

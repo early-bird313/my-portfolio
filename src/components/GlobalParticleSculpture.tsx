@@ -231,38 +231,42 @@ const GlobalParticleSculpture = () => {
           const projectsRect = projectsEl ? projectsEl.getBoundingClientRect() : null;
           const contactRect = contactEl ? contactEl.getBoundingClientRect() : null;
 
+          const isMobile = window.innerWidth < 768;
+          const heroScale = isMobile ? 0.72 : 1.15;
+          const heroOpacity = isMobile ? 0.55 : 1.0;
+
           if (contactRect && contactRect.top < vh * 0.75) {
             // In Contact: Fades out cleanly to spotlight the personal trust profile card
             targetX = 0.0;
             targetY = 0.0;
-            targetScale = 0.75;
+            targetScale = 0.65;
             targetOpacity = 0.0;
           } else if (projectsRect && projectsRect.top < vh * 0.75) {
             // In Featured Projects: Fades out completely as requested!
             targetX = 0.0;
             targetY = 0.0;
-            targetScale = 0.75;
+            targetScale = 0.65;
             targetOpacity = 0.0;
           } else if (aboutRect.top >= vh * 0.75) {
             // At Hero Section: Centered
             targetX = 0;
             targetY = 0;
-            targetScale = 1.15;
-            targetOpacity = 1.0;
+            targetScale = heroScale;
+            targetOpacity = heroOpacity;
           } else if (aboutRect.top < vh * 0.75 && (!journeyRect || journeyRect.top >= vh * 0.65)) {
-            // In About Me: Slides distinctly to the RIGHT (+0.58)
+            // In About Me: On desktop slides to right (+0.58), on mobile stays subtle and centered
             const t = Math.max(0, Math.min(1, (vh * 0.75 - aboutRect.top) / (vh * 0.75)));
-            targetX = 0.58 * t;
+            targetX = isMobile ? 0 : 0.58 * t;
             targetY = -0.04 * t;
-            targetScale = 1.15 - 0.15 * t;
-            targetOpacity = 1.0;
+            targetScale = isMobile ? 0.65 : (1.15 - 0.15 * t);
+            targetOpacity = isMobile ? 0.3 : 1.0;
           } else if (journeyRect && journeyRect.top < vh * 0.65) {
-            // In Journey: Slides across distinctly to the LEFT (-0.58)
+            // In Journey: On desktop slides across to left (-0.58), on mobile stays subtle and centered
             const t = Math.max(0, Math.min(1, (vh * 0.65 - journeyRect.top) / (vh * 0.65)));
-            targetX = 0.58 * (1 - t) + -0.58 * t;
+            targetX = isMobile ? 0 : (0.58 * (1 - t) + -0.58 * t);
             targetY = 0.0;
-            targetScale = 1.0;
-            targetOpacity = 1.0;
+            targetScale = isMobile ? 0.65 : 1.0;
+            targetOpacity = isMobile ? 0.3 : 1.0;
           }
         }
 

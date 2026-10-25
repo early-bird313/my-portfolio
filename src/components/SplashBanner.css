@@ -495,22 +495,22 @@
   .splash-desktop-gradient {
     background: linear-gradient(
       to bottom,
-      rgba(10, 10, 12, 0.15) 0%,
-      rgba(10, 10, 12, 0.35) 45%,
-      rgba(10, 10, 12, 0.85) 75%,
-      rgba(10, 10, 12, 0.98) 100%
+      rgba(10, 10, 12, 0.1) 0%,
+      rgba(10, 10, 12, 0.4) 40%,
+      rgba(10, 10, 12, 0.88) 70%,
+      #0a0a0c 100%
     );
   }
 
   .splash-desktop-img {
-    opacity: 0.88 !important;
-    object-position: 72% 18% !important;
+    opacity: 0.9 !important;
+    object-position: 72% 25% !important;
   }
 
   .splash-hero {
     flex-direction: column;
     justify-content: flex-end;
-    padding: 2rem 5vw 2.5rem;
+    padding: 2rem 5vw 2rem;
     text-align: center;
   }
 
@@ -520,14 +520,12 @@
     text-align: center;
     background: radial-gradient(
       ellipse at center,
-      rgba(10, 10, 12, 0.75) 0%,
-      rgba(10, 10, 12, 0.45) 60%,
+      rgba(10, 10, 12, 0.8) 0%,
+      rgba(10, 10, 12, 0.5) 60%,
       transparent 100%
     );
     padding: 1rem 1.5rem;
     border-radius: 20px;
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
   }
 
   .splash-ideas-title {
@@ -542,43 +540,104 @@
   }
 }
 
-@media (max-width: 650px) {
+@media (max-width: 768px) {
+  .splash-banner {
+    height: 100vh;
+    height: 100dvh;
+    justify-content: flex-end;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1.2rem);
+  }
+
+  .splash-desktop-bg {
+    height: 100vh;
+    height: 100dvh;
+  }
+
   .splash-desktop-img {
-    opacity: 0.92 !important;
-    object-position: 72% 14% !important;
+    width: 100%;
+    height: 62vh;
+    height: 62dvh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    object-fit: cover;
+    object-position: 73% 32% !important;
+    opacity: 0.95 !important;
+  }
+
+  .splash-desktop-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(10, 10, 12, 0.15) 35%,
+      rgba(10, 10, 12, 0.75) 52%,
+      #0a0a0c 68%,
+      #0a0a0c 100%
+    ) !important;
   }
 
   .splash-hero {
-    padding: 1rem 4vw 2rem;
+    flex: initial;
+    padding: 0 5vw 1.2rem !important;
+    margin: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
   }
 
   .hero-content {
-    padding: 0.8rem 1.2rem;
+    padding: 0;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    align-items: center;
+    text-align: center;
+    animation: none;
+  }
+
+  .splash-ideas-title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
   }
 
   .title-text {
-    font-size: clamp(2.2rem, 8.8vw, 3.2rem);
-    line-height: 0.98;
+    font-size: clamp(2rem, 9vw, 2.7rem) !important;
+    line-height: 1.05 !important;
+    letter-spacing: 0.04em !important;
     text-align: center;
   }
 
-  .hero-subtitle {
-    font-size: 0.92rem;
+  .splash-footer {
+    padding-bottom: 0.5rem;
+    position: relative;
+    z-index: 20;
+  }
+
+  .footer-marquee {
+    display: none; /* Hide heavy overflowing marquee on mobile for ultra-clean look */
   }
 
   .loading-capsule-pill {
-    min-width: 220px;
-    height: 46px;
-    padding: 0 18px;
+    min-width: 200px;
+    height: 44px;
+    padding: 0 16px;
+    border-radius: 999px;
   }
 
   .pill-state-loading {
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     gap: 8px;
+    letter-spacing: 0.1em;
   }
 
   .pill-state-welcome {
-    font-size: 0.85rem;
-    letter-spacing: 0.14em;
+    font-size: 0.82rem;
+    letter-spacing: 0.16em;
   }
 }

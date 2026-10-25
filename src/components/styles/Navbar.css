@@ -6,14 +6,16 @@
   position: fixed;
   top: 0;
   left: 0;
+  right: 0;
   width: 100%;
+  box-sizing: border-box;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1.4rem 5vw;
   z-index: 1000;
   pointer-events: auto;
-  background: rgba(10, 10, 12, 0.75);
+  background: rgba(10, 10, 12, 0.85);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -139,20 +141,25 @@
 }
 
 @media (max-width: 900px) {
+  .main-navbar {
+    padding: 1.1rem 1.4rem;
+  }
   .mobile-toggle-btn {
     display: flex;
+    flex-shrink: 0;
   }
   .navbar-right {
     position: fixed;
     top: 0;
     right: -100%;
-    width: 260px;
+    width: min(280px, 80vw);
     height: 100vh;
+    height: 100dvh;
     background: #0d0d11;
     border-left: 1px solid rgba(255, 255, 255, 0.1);
     padding: 6rem 2rem 2rem;
     transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.7);
+    box-shadow: -10px 0 35px rgba(0, 0, 0, 0.85);
   }
   .navbar-right.open {
     right: 0;
@@ -163,6 +170,6 @@
     gap: 1.5rem;
   }
   .nav-item {
-    font-size: 1rem;
+    font-size: 1.05rem;
   }
 }
