@@ -1552,72 +1552,71 @@
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75);
 }
 
-/* Contact Portrait Rectangle Card - Perfectly aligned with Left Form */
+/* Contact Avatar Column (No outer card box - pure circle & status badge matching reference) */
 .contact-photo-card {
   position: relative;
-  background: radial-gradient(ellipse at 50% 25%, rgba(20, 20, 26, 0.95) 0%, rgba(12, 12, 16, 0.98) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 18px;
-  overflow: hidden;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.65), 0 0 35px rgba(204, 255, 0, 0.04);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  box-shadow: none;
   width: 100%;
-  min-height: 520px;
-  padding: 2.8rem 2rem;
+  height: 100%;
+  padding: 0;
 }
 
 .contact-photo-card:hover {
-  border-color: rgba(204, 255, 0, 0.35);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75), 0 0 45px rgba(204, 255, 0, 0.12);
+  border-color: transparent;
+  box-shadow: none;
 }
 
 .photo-card-ambient {
   position: absolute;
-  top: 40%;
+  top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 380px;
-  height: 380px;
-  background: radial-gradient(circle, rgba(204, 255, 0, 0.15) 0%, rgba(204, 255, 0, 0.03) 55%, transparent 72%);
-  filter: blur(50px);
+  width: 440px;
+  height: 440px;
+  background: radial-gradient(circle, rgba(163, 230, 53, 0.18) 0%, rgba(163, 230, 53, 0.03) 55%, transparent 72%);
+  filter: blur(55px);
   pointer-events: none;
 }
 
-/* 1. Large Circle Container inside the Rectangle */
+/* 1. Large Circle Container matching reference */
 .photo-circle-wrap {
   position: relative;
-  width: 360px;
-  height: 360px;
+  width: 375px;
+  height: 375px;
   max-width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 32%, rgba(204, 255, 0, 0.24) 0%, rgba(18, 18, 22, 0.96) 72%);
-  border: 3px solid rgba(204, 255, 0, 0.5);
-  box-shadow: 0 0 45px rgba(204, 255, 0, 0.28), 0 16px 45px rgba(0, 0, 0, 0.9);
+  background: radial-gradient(circle at 50% 40%, rgba(135, 185, 20, 0.45) 0%, rgba(55, 75, 12, 0.6) 48%, rgba(18, 24, 8, 0.95) 75%, rgba(10, 12, 10, 0.98) 100%);
+  border: 3.5px solid #a3e635;
+  box-shadow: 0 0 45px rgba(163, 230, 53, 0.35), 0 16px 45px rgba(0, 0, 0, 0.9);
   display: flex;
   align-items: flex-end;
   justify-content: center;
   overflow: hidden;
-  margin-bottom: 1.6rem;
+  margin-bottom: 1.2rem;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .contact-photo-card:hover .photo-circle-wrap {
-  border-color: rgba(204, 255, 0, 0.7);
-  box-shadow: 0 0 55px rgba(204, 255, 0, 0.4), 0 20px 50px rgba(0, 0, 0, 0.95);
+  border-color: #bef264;
+  box-shadow: 0 0 55px rgba(163, 230, 53, 0.45), 0 20px 50px rgba(0, 0, 0, 0.95);
 }
 
 .photo-circle-aura {
   position: absolute;
-  inset: -20px;
-  background: radial-gradient(circle, rgba(204, 255, 0, 0.28) 0%, transparent 68%);
-  filter: blur(18px);
+  inset: -25px;
+  background: radial-gradient(circle, rgba(163, 230, 53, 0.28) 0%, transparent 68%);
+  filter: blur(20px);
   pointer-events: none;
 }
 
@@ -1625,15 +1624,15 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 50% 8%;
-  transform: scale(1.04);
-  filter: contrast(1.08) brightness(1.04);
+  object-position: 48% 12%;
+  transform: scale(1.06);
+  filter: contrast(1.06) brightness(1.02);
   transition: transform 0.4s ease;
   display: block;
 }
 
 .contact-photo-card:hover .contact-portrait-img {
-  transform: scale(1.09);
+  transform: scale(1.1);
 }
 
 /* 2. Small 'Available for projects' text pill */
@@ -1642,35 +1641,36 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  background: rgba(14, 14, 18, 0.92);
-  border: 1px solid rgba(204, 255, 0, 0.4);
-  padding: 0.45rem 1.25rem;
+  background: rgba(14, 14, 18, 0.95);
+  border: 1px solid rgba(163, 230, 53, 0.4);
+  padding: 0.38rem 1.2rem;
   border-radius: 9999px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.65), 0 0 15px rgba(204, 255, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.7);
   transition: border-color 0.25s ease;
 }
 
 .contact-status-badge:hover {
-  border-color: var(--accent, #ccff00);
+  border-color: #a3e635;
 }
 
 .status-pulse-dot {
-  width: 8px;
-  height: 8px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: var(--accent, #ccff00);
-  box-shadow: 0 0 8px var(--accent, #ccff00);
+  background: #a3e635;
+  box-shadow: 0 0 8px #a3e635;
   animation: pulseNodeRing 1.8s infinite;
 }
 
 .status-text {
   font-family: var(--font-text, 'Space Grotesk', sans-serif);
-  font-size: 0.82rem;
-  font-weight: 600;
+  font-size: 0.76rem;
+  font-weight: 700;
   color: #e4e4e7;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
 }
+
 
 .form-group {
   margin-bottom: 1.5rem;
