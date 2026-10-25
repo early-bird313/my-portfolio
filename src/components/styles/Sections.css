@@ -1511,17 +1511,10 @@
    =================================================================== */
 .contact-grid-layout {
   display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: 5.5rem;
-  align-items: flex-start;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  align-items: stretch;
   width: 100%;
-}
-
-.contact-content-col {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 680px;
 }
 
 .contact-lead-sub {
@@ -1529,7 +1522,7 @@
   font-size: 1.05rem;
   color: #d1d5db;
   line-height: 1.7;
-  margin-bottom: 2rem;
+  margin-bottom: 2.2rem;
 }
 
 .contact-sculpture-anchor {
@@ -1539,119 +1532,74 @@
   pointer-events: none;
 }
 
-/* Contact Profile & Trust Card */
-.contact-profile-card {
-  position: relative;
-  background: radial-gradient(ellipse at top left, rgba(20, 20, 26, 0.9) 0%, rgba(10, 10, 14, 0.95) 100%);
+.contact-form-card {
+  background: radial-gradient(ellipse at top left, rgba(20, 20, 26, 0.9) 0%, rgba(12, 12, 16, 0.95) 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 20px;
-  padding: 3.2rem 2rem;
+  border-radius: 18px;
+  padding: 2.8rem 2.4rem;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.65), 0 0 35px rgba(204, 255, 0, 0.05);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.6);
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  min-height: 520px;
-  text-align: center;
-  overflow: hidden;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
 }
 
-.contact-profile-card:hover {
-  border-color: rgba(204, 255, 0, 0.35);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75), 0 0 45px rgba(204, 255, 0, 0.14);
+.contact-form-card:hover {
+  border-color: rgba(204, 255, 0, 0.25);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75);
 }
 
-.profile-card-ambient {
+/* Contact Portrait Rectangle Card - Perfectly aligned with Left Form */
+.contact-photo-card {
+  position: relative;
+  background: radial-gradient(ellipse at 50% 25%, rgba(204, 255, 0, 0.08) 0%, rgba(18, 18, 22, 0.92) 65%, rgba(10, 10, 14, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.65), 0 0 35px rgba(204, 255, 0, 0.04);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  width: 100%;
+  min-height: 520px;
+}
+
+.contact-photo-card:hover {
+  border-color: rgba(204, 255, 0, 0.35);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75), 0 0 45px rgba(204, 255, 0, 0.12);
+}
+
+.photo-card-ambient {
   position: absolute;
-  top: 15%;
+  top: 35%;
   left: 50%;
-  transform: translateX(-50%);
-  width: 380px;
-  height: 280px;
-  background: radial-gradient(circle, rgba(204, 255, 0, 0.16) 0%, transparent 70%);
+  transform: translate(-50%, -50%);
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(circle, rgba(204, 255, 0, 0.18) 0%, rgba(204, 255, 0, 0.04) 55%, transparent 72%);
   filter: blur(50px);
   pointer-events: none;
 }
 
-.profile-avatar-wrap {
-  position: relative;
-  width: 320px;
-  height: 320px;
-  max-width: 100%;
-  aspect-ratio: 1 / 1;
-  margin: 0 auto 2rem;
-  border-radius: 50%;
-  background: radial-gradient(circle at 50% 35%, rgba(204, 255, 0, 0.22) 0%, rgba(18, 18, 22, 0.98) 75%);
-  border: 3.5px solid rgba(204, 255, 0, 0.55);
-  box-shadow: 0 0 45px rgba(204, 255, 0, 0.3), 0 16px 50px rgba(0, 0, 0, 0.9);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  overflow: hidden;
-}
-
-.profile-avatar-aura {
-  position: absolute;
-  inset: -20px;
-  background: radial-gradient(circle, rgba(204, 255, 0, 0.25) 0%, transparent 68%);
-  filter: blur(18px);
-  pointer-events: none;
-}
-
-.profile-portrait-img {
+.contact-portrait-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: center 8%;
-  filter: contrast(1.08) brightness(1.04);
+  max-height: 560px;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: contrast(1.06) brightness(1.03);
   transition: transform 0.4s ease;
+  display: block;
 }
 
-.contact-profile-card:hover .profile-portrait-img {
-  transform: scale(1.05);
-}
-
-.profile-status-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  background: rgba(14, 14, 18, 0.95);
-  border: 1.5px solid rgba(204, 255, 0, 0.5);
-  padding: 0.8rem 2rem;
-  border-radius: 9999px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.75), 0 0 20px rgba(204, 255, 0, 0.18);
-  margin-bottom: 0;
-}
-
-.status-pulse-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--accent, #ccff00);
-  box-shadow: 0 0 12px var(--accent, #ccff00);
-  animation: pulseNodeRing 1.8s infinite;
-}
-
-.status-text {
-  font-family: var(--font-text, 'Space Grotesk', sans-serif);
-  font-size: 1rem;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.contact-form-card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
-  padding: 2.5rem;
-  backdrop-filter: blur(14px);
+.contact-photo-card:hover .contact-portrait-img {
+  transform: scale(1.025);
 }
 
 .form-group {
@@ -1790,13 +1738,15 @@
     grid-template-columns: 1fr;
     gap: 2.5rem;
   }
-  .contact-content-col {
+  .contact-form-card {
     order: 2;
   }
-  .contact-profile-card {
+  .contact-photo-card {
     order: 1;
     max-width: 680px;
     margin: 0 auto;
+    height: 480px;
+    min-height: auto;
   }
   .contact-sculpture-anchor,
   .about-sculpture-anchor,
@@ -1815,20 +1765,16 @@
 }
 
 @media (max-width: 768px) {
-  .contact-profile-card {
-    padding: 2.4rem 1.25rem;
+  .contact-form-card {
+    padding: 2rem 1.3rem;
+  }
+  .contact-photo-card {
+    height: 380px;
     min-height: auto;
+    border-radius: 14px;
   }
-  .profile-avatar-wrap {
-    width: clamp(230px, 66vw, 270px);
-    height: clamp(230px, 66vw, 270px);
-    margin: 0 auto 1.5rem;
-  }
-  .profile-status-badge {
-    padding: 0.7rem 1.5rem;
-  }
-  .status-text {
-    font-size: 0.88rem;
+  .contact-portrait-img {
+    max-height: 380px;
   }
   .portfolio-section {
     padding: 6.5rem 5vw 3.5rem;
