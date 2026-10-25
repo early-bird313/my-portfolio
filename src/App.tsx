@@ -10,6 +10,7 @@ import Contact from "./components/Contact";
 import Footer from "./components/Footer";
 import SocialIcons from "./components/SocialIcons";
 import GlobalParticleSculpture from "./components/GlobalParticleSculpture";
+import WhatsAppWidget from "./components/WhatsAppWidget";
 import "./App.css";
 
 const App = () => {
@@ -39,6 +40,7 @@ const App = () => {
         <Contact />
         <Footer />
         <SocialIcons />
+        <WhatsAppWidget />
       </main>
     </>
   );

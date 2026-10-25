@@ -37,6 +37,22 @@ export const config = {
     email:    "pabelminhajahmed@gmail.com",
   },
 
+  /* ── WhatsApp Widget Configuration ──────────────────────────── */
+  whatsapp: {
+    enabled: true,
+    phoneNumber: "8801304630918", // Your WhatsApp number with country code (no + or spaces)
+    agentName: "Minhaj Ahmed Pabel",
+    agentRole: "Typically replies in minutes",
+    agentAvatar: "/images/contact-portrait.png",
+    welcomeMessage: "👋 Assalamu Alaikum! Thanks for visiting my portfolio. How can I help you today?",
+    quickPrompts: [
+      "💼 Let's discuss a new project",
+      "🚀 Need a modern website / web app",
+      "💬 Freelance / collaboration inquiry",
+      "💰 Inquire about service pricing",
+    ],
+  },
+
   /* ── Splash Timer (seconds) ────────────────────────────────── */
   splashDuration: 5,
 
