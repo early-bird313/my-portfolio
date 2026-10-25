@@ -1581,42 +1581,42 @@
   top: 45%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 440px;
-  height: 440px;
-  background: radial-gradient(circle, rgba(163, 230, 53, 0.18) 0%, rgba(163, 230, 53, 0.03) 55%, transparent 72%);
-  filter: blur(55px);
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(163, 230, 53, 0.2) 0%, rgba(163, 230, 53, 0.03) 55%, transparent 72%);
+  filter: blur(60px);
   pointer-events: none;
 }
 
 /* 1. Large Circle Container matching reference */
 .photo-circle-wrap {
   position: relative;
-  width: 375px;
-  height: 375px;
+  width: 440px;
+  height: 440px;
   max-width: 100%;
   aspect-ratio: 1 / 1;
   border-radius: 50%;
   background: radial-gradient(circle at 50% 40%, rgba(135, 185, 20, 0.45) 0%, rgba(55, 75, 12, 0.6) 48%, rgba(18, 24, 8, 0.95) 75%, rgba(10, 12, 10, 0.98) 100%);
-  border: 3.5px solid #a3e635;
-  box-shadow: 0 0 45px rgba(163, 230, 53, 0.35), 0 16px 45px rgba(0, 0, 0, 0.9);
+  border: 4px solid #a3e635;
+  box-shadow: 0 0 50px rgba(163, 230, 53, 0.38), 0 20px 50px rgba(0, 0, 0, 0.9);
   display: flex;
   align-items: flex-end;
   justify-content: center;
   overflow: hidden;
-  margin-bottom: 1.2rem;
+  margin-bottom: 1.4rem;
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .contact-photo-card:hover .photo-circle-wrap {
   border-color: #bef264;
-  box-shadow: 0 0 55px rgba(163, 230, 53, 0.45), 0 20px 50px rgba(0, 0, 0, 0.95);
+  box-shadow: 0 0 65px rgba(163, 230, 53, 0.48), 0 24px 55px rgba(0, 0, 0, 0.95);
 }
 
 .photo-circle-aura {
   position: absolute;
   inset: -25px;
-  background: radial-gradient(circle, rgba(163, 230, 53, 0.28) 0%, transparent 68%);
-  filter: blur(20px);
+  background: radial-gradient(circle, rgba(163, 230, 53, 0.3) 0%, transparent 68%);
+  filter: blur(22px);
   pointer-events: none;
 }
 
@@ -1624,15 +1624,15 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: 48% 12%;
-  transform: scale(1.06);
+  object-position: 48% 10%;
+  transform: scale(1.05);
   filter: contrast(1.06) brightness(1.02);
   transition: transform 0.4s ease;
   display: block;
 }
 
 .contact-photo-card:hover .contact-portrait-img {
-  transform: scale(1.1);
+  transform: scale(1.09);
 }
 
 /* 2. Small 'Available for projects' text pill */
@@ -1846,8 +1846,8 @@
     padding: 2.2rem 1.25rem;
   }
   .photo-circle-wrap {
-    width: clamp(210px, 60vw, 250px);
-    height: clamp(210px, 60vw, 250px);
+    width: clamp(260px, 75vw, 320px);
+    height: clamp(260px, 75vw, 320px);
     margin-bottom: 1.2rem;
   }
   .contact-status-badge {
