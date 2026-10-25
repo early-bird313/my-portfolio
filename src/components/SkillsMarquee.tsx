@@ -1,20 +1,20 @@
 import "./styles/SkillsMarquee.css";
 
 const row1Skills = [
-  { text: "AI AUTOMATION", variant: "accent", badge: "2026 Focus" },
+  { text: "AI AUTOMATION", variant: "accent" },
   { text: "WEB DEVELOPMENT", variant: "solid" },
   { text: "GRAPHIC DESIGN", variant: "outline" },
   { text: "VIDEO EDITING", variant: "accent" },
-  { text: "AUTONOMOUS AGENTS", variant: "solid", badge: "Agentic AI" },
+  { text: "AUTONOMOUS AGENTS", variant: "solid" },
   { text: "DIGITAL SOLUTIONS", variant: "outline" },
 ];
 
 const row2Skills = [
   { text: "FULL-STACK ENGINEERING", variant: "solid" },
-  { text: "PROBLEM SOLVING", variant: "accent", badge: "Core Focus" },
+  { text: "PROBLEM SOLVING", variant: "accent" },
   { text: "INTELLIGENT WORKFLOWS", variant: "outline" },
   { text: "CREATIVE VISUALS", variant: "solid" },
-  { text: "CLIENT SUCCESS", variant: "accent", badge: "50+ Clients" },
+  { text: "CLIENT SUCCESS", variant: "accent" },
   { text: "MODERN TECH STACK", variant: "outline" },
 ];
 
@@ -31,7 +31,6 @@ const SkillsMarquee = () => {
             {[...row1Skills, ...row1Skills].map((item, idx) => (
               <span key={`r1-${idx}`} className={`marquee-item ${item.variant}`}>
                 <span>{item.text}</span>
-                {item.badge && <span className="marquee-pill">{item.badge}</span>}
                 <span className="marquee-star">✦</span>
               </span>
             ))}
@@ -40,7 +39,6 @@ const SkillsMarquee = () => {
             {[...row1Skills, ...row1Skills].map((item, idx) => (
               <span key={`r1-dup-${idx}`} className={`marquee-item ${item.variant}`}>
                 <span>{item.text}</span>
-                {item.badge && <span className="marquee-pill">{item.badge}</span>}
                 <span className="marquee-star">✦</span>
               </span>
             ))}
@@ -53,7 +51,6 @@ const SkillsMarquee = () => {
             {[...row2Skills, ...row2Skills].map((item, idx) => (
               <span key={`r2-${idx}`} className={`marquee-item ${item.variant}`}>
                 <span>{item.text}</span>
-                {item.badge && <span className="marquee-pill">{item.badge}</span>}
                 <span className="marquee-star">✦</span>
               </span>
             ))}
@@ -62,7 +59,6 @@ const SkillsMarquee = () => {
             {[...row2Skills, ...row2Skills].map((item, idx) => (
               <span key={`r2-dup-${idx}`} className={`marquee-item ${item.variant}`}>
                 <span>{item.text}</span>
-                {item.badge && <span className="marquee-pill">{item.badge}</span>}
                 <span className="marquee-star">✦</span>
               </span>
             ))}

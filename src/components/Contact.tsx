@@ -110,10 +110,11 @@ const Contact = () => {
             </div>
           </div>
 
-          {/* Right Column: Personal Trust & Direct Connect Card with Photo */}
+          {/* Right Column: Personal Profile Card */}
           <div className="contact-profile-card">
             <div className="profile-card-ambient" aria-hidden="true" />
             
+            {/* 1. Large Circular Portrait Photo */}
             <div className="profile-avatar-wrap">
               <div className="profile-avatar-aura" aria-hidden="true" />
               <img
@@ -123,57 +124,20 @@ const Contact = () => {
               />
             </div>
 
+            {/* 2. Available for Projects Pill */}
             <div className="profile-status-badge">
               <span className="status-pulse-dot" />
-              <span className="status-text">Available for Projects & Collaboration</span>
+              <span className="status-text">Available for Projects</span>
             </div>
 
-            <div className="profile-details-wrap">
-              <h3 className="profile-name">Minhaj Ahmed Pabel</h3>
-              <p className="profile-role">
-                AI Solutions <span className="role-sep">•</span> Web Development <span className="role-sep">•</span> Creative Design
-              </p>
-              
-              <p className="profile-bio-snippet">
-                Turning complex business challenges into sleek, automated digital products. Let's discuss your vision and build something impactful together.
-              </p>
+            {/* 3. Name */}
+            <h3 className="profile-name">Minhaj Ahmed Pabel</h3>
 
-              {/* Trust Badges */}
-              <div className="profile-trust-points">
-                <div className="trust-point-item">
-                  <span className="trust-icon">✦</span>
-                  <div className="trust-point-text">
-                    <strong>Direct 1-on-1 Collaboration</strong>
-                    <span>Transparent communication from start to launch</span>
-                  </div>
-                </div>
-
-                <div className="trust-point-item">
-                  <span className="trust-icon">✦</span>
-                  <div className="trust-point-text">
-                    <strong>Fast 24-Hour Response</strong>
-                    <span>Prompt replies to queries, quotes & project scopes</span>
-                  </div>
-                </div>
-
-                <div className="trust-point-item">
-                  <span className="trust-icon">✦</span>
-                  <div className="trust-point-text">
-                    <strong>50+ Real-World Challenges Solved</strong>
-                    <span>Proven experience delivering practical client results</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Direct Connect Action */}
-              <div className="profile-direct-connect">
-                <span className="direct-label">Or email directly:</span>
-                <a href="mailto:pabelminhajahmed@gmail.com" className="profile-direct-mail-btn">
-                  <span>pabelminhajahmed@gmail.com</span>
-                  <span className="mail-arrow">↗</span>
-                </a>
-              </div>
-            </div>
+            {/* 4. Direct Email */}
+            <a href="mailto:pabelminhajahmed@gmail.com" className="profile-direct-mail-btn">
+              <span>pabelminhajahmed@gmail.com</span>
+              <span className="mail-arrow">↗</span>
+            </a>
           </div>
         </div>
       </div>
