@@ -232,11 +232,11 @@ const GlobalParticleSculpture = () => {
           const contactRect = contactEl ? contactEl.getBoundingClientRect() : null;
 
           if (contactRect && contactRect.top < vh * 0.75) {
-            // In Contact: Reappears smoothly on the RIGHT side!
-            targetX = 0.58;
-            targetY = 0.02;
-            targetScale = 1.02;
-            targetOpacity = 1.0;
+            // In Contact: Fades out cleanly to spotlight the personal trust profile card
+            targetX = 0.0;
+            targetY = 0.0;
+            targetScale = 0.75;
+            targetOpacity = 0.0;
           } else if (projectsRect && projectsRect.top < vh * 0.75) {
             // In Featured Projects: Fades out completely as requested!
             targetX = 0.0;

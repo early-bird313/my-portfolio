@@ -3,6 +3,7 @@ import SplashBanner from "./components/SplashBanner";
 import Navbar from "./components/Navbar";
 import Hero from "./components/Hero";
 import About from "./components/About";
+import SkillsMarquee from "./components/SkillsMarquee";
 import Journey from "./components/Journey";
 import FeaturedProjects from "./components/FeaturedProjects";
 import Contact from "./components/Contact";
@@ -32,6 +33,7 @@ const App = () => {
         <Navbar />
         <Hero />
         <About />
+        <SkillsMarquee />
         <Journey />
         <FeaturedProjects />
         <Contact />
