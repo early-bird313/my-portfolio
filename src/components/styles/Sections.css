@@ -1555,11 +1555,12 @@
 /* Contact Portrait Rectangle Card - Perfectly aligned with Left Form */
 .contact-photo-card {
   position: relative;
-  background: radial-gradient(ellipse at 50% 30%, rgba(204, 255, 0, 0.09) 0%, rgba(18, 18, 22, 0.92) 65%, rgba(10, 10, 14, 0.98) 100%);
+  background: radial-gradient(ellipse at 50% 25%, rgba(20, 20, 26, 0.95) 0%, rgba(12, 12, 16, 0.98) 100%);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 18px;
   overflow: hidden;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   backdrop-filter: blur(20px);
@@ -1568,6 +1569,7 @@
   transition: border-color 0.3s ease, box-shadow 0.3s ease;
   width: 100%;
   min-height: 520px;
+  padding: 2.8rem 2rem;
 }
 
 .contact-photo-card:hover {
@@ -1577,32 +1579,96 @@
 
 .photo-card-ambient {
   position: absolute;
-  top: 30%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 400px;
-  height: 400px;
-  background: radial-gradient(circle, rgba(204, 255, 0, 0.22) 0%, rgba(204, 255, 0, 0.05) 55%, transparent 72%);
-  filter: blur(52px);
+  width: 380px;
+  height: 380px;
+  background: radial-gradient(circle, rgba(204, 255, 0, 0.15) 0%, rgba(204, 255, 0, 0.03) 55%, transparent 72%);
+  filter: blur(50px);
+  pointer-events: none;
+}
+
+/* 1. Large Circle Container inside the Rectangle */
+.photo-circle-wrap {
+  position: relative;
+  width: 290px;
+  height: 290px;
+  max-width: 100%;
+  aspect-ratio: 1 / 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 35%, rgba(204, 255, 0, 0.22) 0%, rgba(18, 18, 22, 0.96) 75%);
+  border: 3px solid rgba(204, 255, 0, 0.45);
+  box-shadow: 0 0 35px rgba(204, 255, 0, 0.22), 0 16px 40px rgba(0, 0, 0, 0.85);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  margin-bottom: 1.6rem;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.contact-photo-card:hover .photo-circle-wrap {
+  border-color: rgba(204, 255, 0, 0.65);
+  box-shadow: 0 0 45px rgba(204, 255, 0, 0.35), 0 20px 45px rgba(0, 0, 0, 0.95);
+}
+
+.photo-circle-aura {
+  position: absolute;
+  inset: -15px;
+  background: radial-gradient(circle, rgba(204, 255, 0, 0.22) 0%, transparent 68%);
+  filter: blur(14px);
   pointer-events: none;
 }
 
 .contact-portrait-img {
   width: 100%;
   height: 100%;
-  max-height: 560px;
-  object-fit: contain;
-  object-position: center top;
-  transform: translateY(-32px) scale(1.18);
-  filter: contrast(1.06) brightness(1.03);
+  object-fit: cover;
+  object-position: center 8%;
+  filter: contrast(1.08) brightness(1.04);
   transition: transform 0.4s ease;
   display: block;
-  mask-image: linear-gradient(to top, transparent 0%, black 16%, black 100%);
-  -webkit-mask-image: linear-gradient(to top, transparent 0%, black 16%, black 100%);
 }
 
 .contact-photo-card:hover .contact-portrait-img {
-  transform: translateY(-32px) scale(1.21);
+  transform: scale(1.06);
+}
+
+/* 2. Small 'Available for projects' text pill */
+.contact-status-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(14, 14, 18, 0.92);
+  border: 1px solid rgba(204, 255, 0, 0.4);
+  padding: 0.45rem 1.25rem;
+  border-radius: 9999px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.65), 0 0 15px rgba(204, 255, 0, 0.1);
+  transition: border-color 0.25s ease;
+}
+
+.contact-status-badge:hover {
+  border-color: var(--accent, #ccff00);
+}
+
+.status-pulse-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent, #ccff00);
+  box-shadow: 0 0 8px var(--accent, #ccff00);
+  animation: pulseNodeRing 1.8s infinite;
+}
+
+.status-text {
+  font-family: var(--font-text, 'Space Grotesk', sans-serif);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #e4e4e7;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .form-group {
@@ -1748,8 +1814,9 @@
     order: 1;
     max-width: 680px;
     margin: 0 auto;
-    height: 480px;
+    height: auto;
     min-height: auto;
+    padding: 2.5rem 1.5rem;
   }
   .contact-sculpture-anchor,
   .about-sculpture-anchor,
@@ -1772,13 +1839,21 @@
     padding: 2rem 1.3rem;
   }
   .contact-photo-card {
-    height: 400px;
+    height: auto;
     min-height: auto;
     border-radius: 14px;
+    padding: 2.2rem 1.25rem;
   }
-  .contact-portrait-img {
-    max-height: 400px;
-    transform: translateY(-20px) scale(1.15);
+  .photo-circle-wrap {
+    width: clamp(210px, 60vw, 250px);
+    height: clamp(210px, 60vw, 250px);
+    margin-bottom: 1.2rem;
+  }
+  .contact-status-badge {
+    padding: 0.4rem 1.1rem;
+  }
+  .status-text {
+    font-size: 0.78rem;
   }
   .portfolio-section {
     padding: 6.5rem 5vw 3.5rem;

@@ -108,14 +108,25 @@ const Contact = () => {
             </form>
           </div>
 
-          {/* Right Column: Portrait Photo Card (Aligned Rectangle, Only User Pic) */}
+          {/* Right Column: Portrait Photo Card (Aligned Rectangle with Circle & Small Status) */}
           <div className="contact-photo-card">
             <div className="photo-card-ambient" aria-hidden="true" />
-            <img
-              src="/images/contact-portrait.png"
-              alt="Minhaj Ahmed Pabel"
-              className="contact-portrait-img"
-            />
+            
+            {/* 1. Large Circle Avatar */}
+            <div className="photo-circle-wrap">
+              <div className="photo-circle-aura" aria-hidden="true" />
+              <img
+                src="/images/contact-portrait.png"
+                alt="Minhaj Ahmed Pabel"
+                className="contact-portrait-img"
+              />
+            </div>
+
+            {/* 2. Small 'Available for projects' text */}
+            <div className="contact-status-badge">
+              <span className="status-pulse-dot" />
+              <span className="status-text">Available for projects</span>
+            </div>
           </div>
         </div>
       </div>
