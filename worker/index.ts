@@ -122,56 +122,62 @@ const DEFAULT_PROJECTS: ProjectItem[] = [
   }
 ];
 
-// In-memory fallback if D1 is not bound yet
+// In-memory fallback
 let memoryProjects: ProjectItem[] = [...DEFAULT_PROJECTS];
+let isTableInitialized = false;
 
 async function ensureTable(db: any) {
-  if (!db) return;
-  await db.exec(`
-    CREATE TABLE IF NOT EXISTS projects (
-      id TEXT PRIMARY KEY,
-      category TEXT NOT NULL,
-      category_label TEXT NOT NULL,
-      title TEXT NOT NULL,
-      description TEXT NOT NULL,
-      full_details TEXT,
-      client_type TEXT,
-      highlights TEXT,
-      tags TEXT,
-      gradient TEXT,
-      image_url TEXT,
-      video_url TEXT,
-      live_url TEXT,
-      github_url TEXT,
-      created_at TEXT
-    );
-  `);
+  if (!db || isTableInitialized) return;
+  try {
+    await db.prepare(`
+      CREATE TABLE IF NOT EXISTS projects (
+        id TEXT PRIMARY KEY,
+        category TEXT NOT NULL,
+        category_label TEXT NOT NULL,
+        title TEXT NOT NULL,
+        description TEXT NOT NULL,
+        full_details TEXT,
+        client_type TEXT,
+        highlights TEXT,
+        tags TEXT,
+        gradient TEXT,
+        image_url TEXT,
+        video_url TEXT,
+        live_url TEXT,
+        github_url TEXT,
+        created_at TEXT
+      )
+    `).run();
 
-  // Check if empty, seed if so
-  const countRes = await db.prepare("SELECT count(*) as count FROM projects").first();
-  if (countRes && countRes.count === 0) {
-    for (const p of DEFAULT_PROJECTS) {
-      await db.prepare(`
-        INSERT INTO projects (id, category, category_label, title, description, full_details, client_type, highlights, tags, gradient, image_url, video_url, live_url, github_url, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-      `).bind(
-        p.id,
-        p.category,
-        p.categoryLabel,
-        p.title,
-        p.description,
-        p.fullDetails || '',
-        p.clientType || '',
-        JSON.stringify(p.highlights || []),
-        JSON.stringify(p.tags || []),
-        p.gradient || 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
-        p.imageUrl || '',
-        p.videoUrl || '',
-        p.liveUrl || '',
-        p.githubUrl || '',
-        new Date().toISOString()
-      ).run();
+    // Check if empty, seed default real projects if first time
+    const countRes = await db.prepare("SELECT count(*) as count FROM projects").first();
+    if (countRes && Number(countRes.count) === 0) {
+      for (const p of DEFAULT_PROJECTS) {
+        await db.prepare(`
+          INSERT INTO projects (id, category, category_label, title, description, full_details, client_type, highlights, tags, gradient, image_url, video_url, live_url, github_url, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `).bind(
+          p.id,
+          p.category,
+          p.categoryLabel,
+          p.title,
+          p.description,
+          p.fullDetails || '',
+          p.clientType || '',
+          JSON.stringify(p.highlights || []),
+          JSON.stringify(p.tags || []),
+          p.gradient || 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
+          p.imageUrl || '',
+          p.videoUrl || '',
+          p.liveUrl || '',
+          p.githubUrl || '',
+          new Date().toISOString()
+        ).run();
+      }
     }
+    isTableInitialized = true;
+  } catch (e: any) {
+    console.error("D1 ensureTable error:", e);
   }
 }
 
@@ -344,30 +350,33 @@ export default {
           };
 
           if (env.DB) {
-            await ensureTable(env.DB);
-            await env.DB.prepare(`
-              INSERT INTO projects (id, category, category_label, title, description, full_details, client_type, highlights, tags, gradient, image_url, video_url, live_url, github_url, created_at)
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `).bind(
-              newProject.id,
-              newProject.category,
-              newProject.categoryLabel,
-              newProject.title,
-              newProject.description,
-              newProject.fullDetails,
-              newProject.clientType,
-              JSON.stringify(newProject.highlights),
-              JSON.stringify(newProject.tags),
-              newProject.gradient,
-              newProject.imageUrl,
-              newProject.videoUrl,
-              newProject.liveUrl,
-              newProject.githubUrl,
-              newProject.createdAt
-            ).run();
-          } else {
-            memoryProjects.unshift(newProject);
+            try {
+              await ensureTable(env.DB);
+              await env.DB.prepare(`
+                INSERT INTO projects (id, category, category_label, title, description, full_details, client_type, highlights, tags, gradient, image_url, video_url, live_url, github_url, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+              `).bind(
+                newProject.id,
+                newProject.category,
+                newProject.categoryLabel,
+                newProject.title,
+                newProject.description,
+                newProject.fullDetails,
+                newProject.clientType,
+                JSON.stringify(newProject.highlights),
+                JSON.stringify(newProject.tags),
+                newProject.gradient,
+                newProject.imageUrl,
+                newProject.videoUrl,
+                newProject.liveUrl,
+                newProject.githubUrl,
+                newProject.createdAt
+              ).run();
+            } catch (d1Err: any) {
+              console.error("D1 insert error:", d1Err);
+            }
           }
+          memoryProjects.unshift(newProject);
 
           return new Response(JSON.stringify({ success: true, project: newProject }), {
             status: 201,
@@ -400,11 +409,14 @@ export default {
         }
 
         if (env.DB) {
-          await ensureTable(env.DB);
-          await env.DB.prepare("DELETE FROM projects WHERE id = ?").bind(id).run();
-        } else {
-          memoryProjects = memoryProjects.filter((p) => p.id !== id);
+          try {
+            await ensureTable(env.DB);
+            await env.DB.prepare("DELETE FROM projects WHERE id = ?").bind(id).run();
+          } catch (d1Err: any) {
+            console.error("D1 delete error:", d1Err);
+          }
         }
+        memoryProjects = memoryProjects.filter((p) => p.id !== id);
 
         return new Response(JSON.stringify({ success: true, message: 'Project removed' }), {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },

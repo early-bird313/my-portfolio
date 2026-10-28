@@ -197,15 +197,21 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
         headers: { "x-admin-key": "pabel2026" },
       });
 
-      const data = await res.json();
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = { error: `Server returned HTTP ${res.status}` };
+      }
+
       if (res.ok && data.success) {
         loadProjects();
         onProjectsUpdated();
       } else {
-        alert(data.error || "Failed to delete.");
+        alert(data.error || "Failed to delete project.");
       }
-    } catch (err) {
-      alert("Failed to connect to server.");
+    } catch (err: any) {
+      alert(err?.message || "Failed to connect to server.");
     }
   };
 
