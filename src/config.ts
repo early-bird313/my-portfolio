@@ -23,18 +23,18 @@ export const config = {
 
   /* ── Navigation ────────────────────────────────────────────── */
   nav: [
-    { label: "Home",      href: "#home" },
-    { label: "Portfolio",  href: "#portfolio" },
-    { label: "Services",   href: "#services" },
-    { label: "About",      href: "#about" },
-    { label: "Contact",    href: "#contact" },
+    { label: "Home", href: "#home" },
+    { label: "Portfolio", href: "#portfolio" },
+    { label: "Services", href: "#services" },
+    { label: "About", href: "#about" },
+    { label: "Contact", href: "#contact" },
   ],
 
   /* ── Social Links ──────────────────────────────────────────── */
   social: {
-    github:   "https://github.com/your-username",
-    linkedin: "https://linkedin.com/in/your-username",
-    email:    "pabelminhajahmed@gmail.com",
+    github: "https://github.com/early-bird313",
+    linkedin: "https://www.linkedin.com/in/minhajahmed00",
+    email: "pabelminhajahmed@gmail.com",
   },
 
   /* ── WhatsApp Widget Configuration ──────────────────────────── */
@@ -58,11 +58,11 @@ export const config = {
 
   /* ── Theme Colors (also mirrored in index.css as CSS vars) ── */
   colors: {
-    accent:    "#ccff00",
+    accent: "#ccff00",
     accentDim: "#b4f000",
-    bg:        "#0a0a0c",
-    bgLight:   "#121215",
-    text:      "#ffffff",
+    bg: "#0a0a0c",
+    bgLight: "#121215",
+    text: "#ffffff",
     textMuted: "#888888",
   },
 } as const;
