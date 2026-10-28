@@ -415,6 +415,10 @@ export default {
     // ─────────────────────────────────────────────────────────────
     // 4. Fallback: Serve Static Assets
     // ─────────────────────────────────────────────────────────────
-    return env.ASSETS.fetch(request);
+    try {
+      return await env.ASSETS.fetch(request);
+    } catch {
+      return new Response("Not found", { status: 404 });
+    }
   },
 };
