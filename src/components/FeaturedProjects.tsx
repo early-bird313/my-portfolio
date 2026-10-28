@@ -12,6 +12,10 @@ export interface ProjectItem {
   highlights: string[];
   tags: string[];
   gradient: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  liveUrl?: string;
+  githubUrl?: string;
 }
 
 export const projectsData: ProjectItem[] = [
@@ -160,8 +164,23 @@ export const projectsData: ProjectItem[] = [
   }
 ];
 
-// Helper to render high quality vector dummy mockups for each project
-export const renderProjectThumbnailMockup = (projectId: string) => {
+export const renderProjectThumbnailMockup = (projectId: string, imageUrl?: string) => {
+  if (imageUrl) {
+    return (
+      <img
+        src={imageUrl}
+        alt="Project Preview"
+        style={{
+          width: "100%",
+          height: "100%",
+          objectFit: "cover",
+          borderRadius: "8px",
+          display: "block",
+        }}
+      />
+    );
+  }
+
   switch (projectId) {
     case "p1":
       // Corporate Web Platform Mockup
@@ -404,9 +423,14 @@ export const renderProjectThumbnailMockup = (projectId: string) => {
 
 type CategoryFilter = "all" | "websites" | "applications" | "video" | "design";
 
-const FeaturedProjects = () => {
+interface FeaturedProjectsProps {
+  refreshTrigger?: number;
+}
+
+const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) => {
   const [activeFilter, setActiveFilter] = useState<CategoryFilter>("all");
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
+  const [items, setItems] = useState<ProjectItem[]>(projectsData);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -418,13 +442,27 @@ const FeaturedProjects = () => {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  useEffect(() => {
+    fetch("/api/projects")
+      .then((res) => {
+        if (res.ok) return res.json();
+        throw new Error("Fallback");
+      })
+      .then((data) => {
+        if (Array.isArray(data) && data.length > 0) {
+          setItems(data);
+        }
+      })
+      .catch(() => {});
+  }, [refreshTrigger]);
+
   const filteredProjects =
     activeFilter === "all"
-      ? projectsData
-      : projectsData.filter((item) => item.category === activeFilter);
+      ? items
+      : items.filter((item) => item.category === activeFilter);
 
   // Duplicate filtered projects to ensure a continuous infinite seamless loop from left to right
-  const loopMultiplier = Math.max(2, Math.ceil(10 / filteredProjects.length));
+  const loopMultiplier = Math.max(2, Math.ceil(10 / Math.max(1, filteredProjects.length)));
   const slidingList: ProjectItem[] = [];
   for (let i = 0; i < loopMultiplier; i++) {
     slidingList.push(...filteredProjects);
@@ -446,7 +484,7 @@ const FeaturedProjects = () => {
             className={`filter-tab-btn ${activeFilter === "all" ? "active" : ""}`}
             onClick={() => setActiveFilter("all")}
           >
-            All Works ({projectsData.length})
+            All Works ({items.length})
           </button>
           <button
             className={`filter-tab-btn ${activeFilter === "websites" ? "active" : ""}`}
@@ -502,7 +540,7 @@ const FeaturedProjects = () => {
                   <span>View Details ↗</span>
                 </div>
                 <div className="dummy-mockup-container">
-                  {renderProjectThumbnailMockup(project.id)}
+                  {renderProjectThumbnailMockup(project.id, project.imageUrl)}
                 </div>
               </div>
 
@@ -553,7 +591,7 @@ const FeaturedProjects = () => {
                 {selectedProject.categoryLabel}
               </div>
               <div className="modal-mockup-wrap">
-                {renderProjectThumbnailMockup(selectedProject.id)}
+                {renderProjectThumbnailMockup(selectedProject.id, selectedProject.imageUrl)}
               </div>
             </div>
 
@@ -588,17 +626,60 @@ const FeaturedProjects = () => {
                 ))}
               </div>
 
-              <div className="modal-footer-actions">
+              <div className="modal-footer-actions" style={{ flexWrap: "wrap", gap: "10px" }}>
+                {selectedProject.liveUrl && (
+                  <a
+                    href={selectedProject.liveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="modal-primary-btn"
+                    style={{ background: "#ccff00", color: "#000000" }}
+                  >
+                    <span>Visit Live Demo</span>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.4">
+                      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3" />
+                    </svg>
+                  </a>
+                )}
+
+                {selectedProject.githubUrl && (
+                  <a
+                    href={selectedProject.githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="modal-secondary-btn"
+                    style={{ display: "inline-flex", alignItems: "center", gap: "8px" }}
+                  >
+                    <span>Source Code</span>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                      <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                    </svg>
+                  </a>
+                )}
+
+                {selectedProject.videoUrl && (
+                  <a
+                    href={selectedProject.videoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="modal-secondary-btn"
+                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", color: "#fbbf24", borderColor: "#fbbf2450" }}
+                  >
+                    <span>Watch Video Reel</span>
+                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  </a>
+                )}
+
                 <a
                   href="#contact"
-                  className="modal-primary-btn"
+                  className="modal-secondary-btn"
                   onClick={() => setSelectedProject(null)}
                 >
                   <span>Discuss Similar Project</span>
-                  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.4">
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
                 </a>
+
                 <button
                   type="button"
                   className="modal-secondary-btn"
