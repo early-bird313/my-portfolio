@@ -33,9 +33,70 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
     githubUrl: "",
   });
 
+  const [imageInputMode, setImageInputMode] = useState<"upload" | "url">("upload");
+  const [isProcessingImage, setIsProcessingImage] = useState(false);
+
   const [formSuccess, setFormSuccess] = useState("");
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleImageFileChange = (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      setFormError("Please select a valid image file (.png, .jpg, .webp, .svg)");
+      return;
+    }
+
+    setIsProcessingImage(true);
+    setFormError("");
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const src = e.target?.result as string;
+      const img = new Image();
+      img.onload = () => {
+        try {
+          const canvas = document.createElement("canvas");
+          const MAX_WIDTH = 1280;
+          const MAX_HEIGHT = 720;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height = Math.round((height * MAX_WIDTH) / width);
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width = Math.round((width * MAX_HEIGHT) / height);
+              height = MAX_HEIGHT;
+            }
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            const compressed = canvas.toDataURL("image/webp", 0.82);
+            setFormData((prev) => ({ ...prev, imageUrl: compressed }));
+          } else {
+            setFormData((prev) => ({ ...prev, imageUrl: src }));
+          }
+        } catch {
+          setFormData((prev) => ({ ...prev, imageUrl: src }));
+        } finally {
+          setIsProcessingImage(false);
+        }
+      };
+      img.onerror = () => {
+        setIsProcessingImage(false);
+        setFormError("Could not process image file.");
+      };
+      img.src = src;
+    };
+    reader.readAsDataURL(file);
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -426,18 +487,179 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
               </div>
             </div>
 
-            {/* Image / Thumbnail URL */}
+            {/* Image / Thumbnail Section */}
             <div>
-              <label style={{ display: "block", fontSize: "11px", color: "#888899", textTransform: "uppercase", marginBottom: "6px" }}>
-                Image / Thumbnail URL
-              </label>
-              <input
-                type="text"
-                value={formData.imageUrl}
-                onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                placeholder="/images/banner.jpg or https://images.unsplash.com/..."
-                style={{ width: "100%", padding: "10px 14px", backgroundColor: "#07080a", border: "1px solid #222533", borderRadius: "8px", color: "#fff", fontSize: "13px", boxSizing: "border-box" }}
-              />
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                <label style={{ fontSize: "11px", color: "#888899", textTransform: "uppercase" }}>
+                  Project Thumbnail / Image
+                </label>
+                <div style={{ display: "flex", gap: "6px" }}>
+                  <button
+                    type="button"
+                    onClick={() => setImageInputMode("upload")}
+                    style={{
+                      fontSize: "11px",
+                      padding: "3px 10px",
+                      borderRadius: "6px",
+                      backgroundColor: imageInputMode === "upload" ? "#222533" : "transparent",
+                      color: imageInputMode === "upload" ? config.colors.accent : "#888",
+                      border: "1px solid #222533",
+                      cursor: "pointer",
+                      fontWeight: 600,
+                    }}
+                  >
+                    📁 Upload from Computer
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setImageInputMode("url")}
+                    style={{
+                      fontSize: "11px",
+                      padding: "3px 10px",
+                      borderRadius: "6px",
+                      backgroundColor: imageInputMode === "url" ? "#222533" : "transparent",
+                      color: imageInputMode === "url" ? config.colors.accent : "#888",
+                      border: "1px solid #222533",
+                      cursor: "pointer",
+                      fontWeight: 600,
+                    }}
+                  >
+                    🔗 Image Link / URL
+                  </button>
+                </div>
+              </div>
+
+              {imageInputMode === "upload" ? (
+                <div>
+                  {!formData.imageUrl ? (
+                    <label
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        padding: "20px 16px",
+                        backgroundColor: "#07080a",
+                        border: "2px dashed #2a2e40",
+                        borderRadius: "10px",
+                        cursor: "pointer",
+                        transition: "all 0.2s",
+                      }}
+                      onDragOver={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.style.borderColor = config.colors.accent;
+                      }}
+                      onDragLeave={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.style.borderColor = "#2a2e40";
+                      }}
+                      onDrop={(e) => {
+                        e.preventDefault();
+                        e.currentTarget.style.borderColor = "#2a2e40";
+                        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                          handleImageFileChange(e.dataTransfer.files[0]);
+                        }
+                      }}
+                    >
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: "none" }}
+                        onChange={(e) => {
+                          if (e.target.files && e.target.files[0]) {
+                            handleImageFileChange(e.target.files[0]);
+                          }
+                        }}
+                      />
+                      <span style={{ fontSize: "28px", marginBottom: "6px" }}>🖼️</span>
+                      <span style={{ fontSize: "13px", color: "#ffffff", fontWeight: 600 }}>
+                        {isProcessingImage ? "Optimizing image..." : "Click or Drag & Drop image file"}
+                      </span>
+                      <span style={{ fontSize: "11px", color: "#666", marginTop: "4px" }}>
+                        Supports PNG, JPG, WebP, SVG (Auto-optimized for instant loading)
+                      </span>
+                    </label>
+                  ) : (
+                    <div
+                      style={{
+                        position: "relative",
+                        borderRadius: "8px",
+                        overflow: "hidden",
+                        border: "1px solid #2a2e40",
+                        backgroundColor: "#0a0a0f",
+                      }}
+                    >
+                      <img
+                        src={formData.imageUrl}
+                        alt="Preview"
+                        style={{
+                          width: "100%",
+                          maxHeight: "150px",
+                          objectFit: "cover",
+                          display: "block",
+                        }}
+                      />
+                      <div
+                        style={{
+                          position: "absolute",
+                          bottom: "8px",
+                          right: "8px",
+                          display: "flex",
+                          gap: "8px",
+                        }}
+                      >
+                        <button
+                          type="button"
+                          onClick={() => setFormData({ ...formData, imageUrl: "" })}
+                          style={{
+                            padding: "4px 10px",
+                            backgroundColor: "rgba(0,0,0,0.85)",
+                            color: "#ff5555",
+                            border: "1px solid rgba(255,85,85,0.4)",
+                            borderRadius: "6px",
+                            fontSize: "11px",
+                            fontWeight: 600,
+                            cursor: "pointer",
+                          }}
+                        >
+                          ✕ Remove Image
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  <input
+                    type="text"
+                    value={formData.imageUrl}
+                    onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                    placeholder="/images/banner.jpg or https://images.unsplash.com/..."
+                    style={{
+                      width: "100%",
+                      padding: "10px 14px",
+                      backgroundColor: "#07080a",
+                      border: "1px solid #222533",
+                      borderRadius: "8px",
+                      color: "#fff",
+                      fontSize: "13px",
+                      boxSizing: "border-box",
+                    }}
+                  />
+                  {formData.imageUrl && (
+                    <div style={{ marginTop: "8px", borderRadius: "8px", overflow: "hidden", maxHeight: "120px", border: "1px solid #222533" }}>
+                      <img
+                        src={formData.imageUrl}
+                        alt="URL Preview"
+                        style={{ width: "100%", maxHeight: "120px", objectFit: "cover", display: "block" }}
+                        onError={(e) => {
+                          (e.currentTarget as HTMLElement).style.display = "none";
+                        }}
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Submit */}
