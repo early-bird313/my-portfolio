@@ -253,19 +253,16 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
           <div
             style={{
               textAlign: "center",
-              padding: "70px 20px",
-              color: "rgba(255, 255, 255, 0.6)",
+              padding: "60px 20px",
+              color: "rgba(255, 255, 255, 0.45)",
               fontFamily: "var(--font-mono, monospace)",
               width: "100%",
+              letterSpacing: "0.05em",
             }}
           >
-            <div style={{ fontSize: "36px", marginBottom: "12px" }}>🚀</div>
-            <p style={{ fontSize: "15px", marginBottom: "8px", color: "#ffffff" }}>
-              No projects added in this category yet.
+            <p style={{ fontSize: "14px", margin: 0 }}>
+              No projects yet.
             </p>
-            <span style={{ fontSize: "12px", color: "#ccff00" }}>
-              Press [Ctrl + Shift + A] to launch Admin Studio & add projects.
-            </span>
           </div>
         ) : (
           <div className="projects-slider-track" key={activeFilter}>
