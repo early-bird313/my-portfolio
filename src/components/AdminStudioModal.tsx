@@ -28,74 +28,120 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
     highlights: "",
     tags: "",
     imageUrl: "",
+    galleryImages: [] as string[],
     videoUrl: "",
     liveUrl: "",
     githubUrl: "",
   });
 
   const [imageInputMode, setImageInputMode] = useState<"upload" | "url">("upload");
+  const [galleryInputMode, setGalleryInputMode] = useState<"upload" | "url">("upload");
+  const [galleryUrlInput, setGalleryUrlInput] = useState("");
   const [isProcessingImage, setIsProcessingImage] = useState(false);
 
   const [formSuccess, setFormSuccess] = useState("");
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleImageFileChange = (file: File) => {
-    if (!file.type.startsWith("image/")) {
-      setFormError("Please select a valid image file (.png, .jpg, .webp, .svg)");
-      return;
-    }
+  const compressImageFile = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      if (!file.type.startsWith("image/")) {
+        return reject(new Error("Please select a valid image file (.png, .jpg, .webp, .svg)"));
+      }
 
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const src = e.target?.result as string;
+        const img = new Image();
+        img.onload = () => {
+          try {
+            const canvas = document.createElement("canvas");
+            const MAX_WIDTH = 1280;
+            const MAX_HEIGHT = 720;
+            let width = img.width;
+            let height = img.height;
+
+            if (width > height) {
+              if (width > MAX_WIDTH) {
+                height = Math.round((height * MAX_WIDTH) / width);
+                width = MAX_WIDTH;
+              }
+            } else {
+              if (height > MAX_HEIGHT) {
+                width = Math.round((width * MAX_HEIGHT) / height);
+                height = MAX_HEIGHT;
+              }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext("2d");
+            if (ctx) {
+              ctx.drawImage(img, 0, 0, width, height);
+              resolve(canvas.toDataURL("image/webp", 0.82));
+            } else {
+              resolve(src);
+            }
+          } catch {
+            resolve(src);
+          }
+        };
+        img.onerror = () => reject(new Error("Failed to process image"));
+        img.src = src;
+      };
+      reader.onerror = () => reject(new Error("File read error"));
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleImageFileChange = async (file: File) => {
     setIsProcessingImage(true);
     setFormError("");
+    try {
+      const compressed = await compressImageFile(file);
+      setFormData((prev) => ({ ...prev, imageUrl: compressed }));
+    } catch (err: any) {
+      setFormError(err.message || "Failed to process image.");
+    } finally {
+      setIsProcessingImage(false);
+    }
+  };
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const src = e.target?.result as string;
-      const img = new Image();
-      img.onload = () => {
-        try {
-          const canvas = document.createElement("canvas");
-          const MAX_WIDTH = 1280;
-          const MAX_HEIGHT = 720;
-          let width = img.width;
-          let height = img.height;
+  const handleMultipleGalleryUpload = async (files: FileList | File[]) => {
+    setIsProcessingImage(true);
+    setFormError("");
+    try {
+      const fileArray = Array.from(files);
+      const results: string[] = [];
+      for (const f of fileArray) {
+        const compressed = await compressImageFile(f);
+        results.push(compressed);
+      }
+      setFormData((prev) => ({
+        ...prev,
+        galleryImages: [...prev.galleryImages, ...results],
+      }));
+    } catch (err: any) {
+      setFormError(err.message || "Failed to process gallery photos.");
+    } finally {
+      setIsProcessingImage(false);
+    }
+  };
 
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height = Math.round((height * MAX_WIDTH) / width);
-              width = MAX_WIDTH;
-            }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width = Math.round((width * MAX_HEIGHT) / height);
-              height = MAX_HEIGHT;
-            }
-          }
+  const removeGalleryImage = (indexToRemove: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      galleryImages: prev.galleryImages.filter((_, idx) => idx !== indexToRemove),
+    }));
+  };
 
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          if (ctx) {
-            ctx.drawImage(img, 0, 0, width, height);
-            const compressed = canvas.toDataURL("image/webp", 0.82);
-            setFormData((prev) => ({ ...prev, imageUrl: compressed }));
-          } else {
-            setFormData((prev) => ({ ...prev, imageUrl: src }));
-          }
-        } catch {
-          setFormData((prev) => ({ ...prev, imageUrl: src }));
-        } finally {
-          setIsProcessingImage(false);
-        }
-      };
-      img.onerror = () => {
-        setIsProcessingImage(false);
-        setFormError("Could not process image file.");
-      };
-      img.src = src;
-    };
-    reader.readAsDataURL(file);
+  const addGalleryUrl = () => {
+    if (!galleryUrlInput.trim()) return;
+    setFormData((prev) => ({
+      ...prev,
+      galleryImages: [...prev.galleryImages, galleryUrlInput.trim()],
+    }));
+    setGalleryUrlInput("");
   };
 
   useEffect(() => {
@@ -139,6 +185,7 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
       highlights: formData.highlights.split("\n").map((h) => h.trim()).filter(Boolean),
       tags: formData.tags.split(",").map((t) => t.trim()).filter(Boolean),
       imageUrl: formData.imageUrl || "/images/banner.jpg",
+      galleryImages: formData.galleryImages,
       videoUrl: formData.videoUrl || "",
       liveUrl: formData.liveUrl || "",
       githubUrl: formData.githubUrl || "",
@@ -166,6 +213,7 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
           highlights: "",
           tags: "",
           imageUrl: "",
+          galleryImages: [],
           videoUrl: "",
           liveUrl: "",
           githubUrl: "",
@@ -668,8 +716,229 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
               )}
             </div>
 
+            {/* Gallery Images / Website Screenshots (Top-to-Bottom Showcase) */}
+            <div style={{ marginTop: "16px", padding: "14px", backgroundColor: "#0b0c10", borderRadius: "10px", border: "1px solid #1f2230" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                <div>
+                  <label style={{ fontSize: "11px", color: "#ccff00", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.5px" }}>
+                    Website Screenshots / Gallery Photos
+                  </label>
+                  <p style={{ margin: "2px 0 0 0", fontSize: "11px", color: "#888899" }}>
+                    Add multiple screenshots to show in detail modal from top to bottom
+                  </p>
+                </div>
+                <span style={{ fontSize: "11px", padding: "2px 8px", borderRadius: "4px", backgroundColor: "#1a1c26", color: "#aaa" }}>
+                  {formData.galleryImages.length} {formData.galleryImages.length === 1 ? "Photo" : "Photos"}
+                </span>
+              </div>
+
+              {/* Mode Switcher */}
+              <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
+                <button
+                  type="button"
+                  onClick={() => setGalleryInputMode("upload")}
+                  style={{
+                    fontSize: "11px",
+                    padding: "4px 10px",
+                    borderRadius: "6px",
+                    backgroundColor: galleryInputMode === "upload" ? "#222533" : "transparent",
+                    color: galleryInputMode === "upload" ? config.colors.accent : "#888",
+                    border: "1px solid #222533",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                  }}
+                >
+                  📁 Upload Photos from PC (Multiple)
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setGalleryInputMode("url")}
+                  style={{
+                    fontSize: "11px",
+                    padding: "4px 10px",
+                    borderRadius: "6px",
+                    backgroundColor: galleryInputMode === "url" ? "#222533" : "transparent",
+                    color: galleryInputMode === "url" ? config.colors.accent : "#888",
+                    border: "1px solid #222533",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                  }}
+                >
+                  🔗 Add by URL
+                </button>
+              </div>
+
+              {galleryInputMode === "upload" ? (
+                <label
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "16px",
+                    backgroundColor: "#07080a",
+                    border: "2px dashed #2a2e40",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    transition: "all 0.2s",
+                  }}
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.style.borderColor = config.colors.accent;
+                  }}
+                  onDragLeave={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.style.borderColor = "#2a2e40";
+                  }}
+                  onDrop={(e) => {
+                    e.preventDefault();
+                    e.currentTarget.style.borderColor = "#2a2e40";
+                    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                      handleMultipleGalleryUpload(e.dataTransfer.files);
+                    }
+                  }}
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    style={{ display: "none" }}
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        handleMultipleGalleryUpload(e.target.files);
+                      }
+                    }}
+                  />
+                  <span style={{ fontSize: "22px", marginBottom: "4px" }}>📸</span>
+                  <span style={{ fontSize: "12px", color: "#ffffff", fontWeight: 600 }}>
+                    {isProcessingImage ? "Optimizing photos..." : "+ Choose One or Multiple Photos from PC"}
+                  </span>
+                  <span style={{ fontSize: "10px", color: "#666", marginTop: "2px" }}>
+                    Select several images at once to display from top to bottom
+                  </span>
+                </label>
+              ) : (
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <input
+                    type="url"
+                    value={galleryUrlInput}
+                    onChange={(e) => setGalleryUrlInput(e.target.value)}
+                    placeholder="https://... image link"
+                    style={{
+                      flex: 1,
+                      padding: "8px 12px",
+                      backgroundColor: "#07080a",
+                      border: "1px solid #222533",
+                      borderRadius: "6px",
+                      color: "#fff",
+                      fontSize: "12px",
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={addGalleryUrl}
+                    style={{
+                      padding: "8px 14px",
+                      backgroundColor: "#222533",
+                      color: config.colors.accent,
+                      border: "1px solid #2e3347",
+                      borderRadius: "6px",
+                      fontSize: "12px",
+                      fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                  >
+                    + Add Link
+                  </button>
+                </div>
+              )}
+
+              {/* Preview Stack of Added Gallery Images */}
+              {formData.galleryImages.length > 0 && (
+                <div style={{ marginTop: "12px", display: "flex", flexDirection: "column", gap: "8px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: "11px", color: "#888899" }}>Added Screenshots Preview:</span>
+                    <button
+                      type="button"
+                      onClick={() => setFormData((prev) => ({ ...prev, galleryImages: [] }))}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        color: "#ff5555",
+                        fontSize: "11px",
+                        cursor: "pointer",
+                        textDecoration: "underline",
+                      }}
+                    >
+                      Clear All ({formData.galleryImages.length})
+                    </button>
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "8px" }}>
+                    {formData.galleryImages.map((imgSrc, imgIdx) => (
+                      <div
+                        key={imgIdx}
+                        style={{
+                          position: "relative",
+                          borderRadius: "6px",
+                          overflow: "hidden",
+                          border: "1px solid #2a2e40",
+                          backgroundColor: "#07080a",
+                          aspectRatio: "16 / 10",
+                        }}
+                      >
+                        <img
+                          src={imgSrc}
+                          alt={`Screenshot ${imgIdx + 1}`}
+                          style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                        />
+                        <span
+                          style={{
+                            position: "absolute",
+                            top: "4px",
+                            left: "4px",
+                            backgroundColor: "rgba(0,0,0,0.75)",
+                            color: "#fff",
+                            fontSize: "10px",
+                            padding: "1px 5px",
+                            borderRadius: "4px",
+                            fontFamily: "var(--font-mono, monospace)",
+                          }}
+                        >
+                          #{imgIdx + 1}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeGalleryImage(imgIdx)}
+                          title="Remove this photo"
+                          style={{
+                            position: "absolute",
+                            top: "4px",
+                            right: "4px",
+                            width: "20px",
+                            height: "20px",
+                            borderRadius: "50%",
+                            backgroundColor: "rgba(255, 60, 60, 0.9)",
+                            color: "#fff",
+                            border: "none",
+                            fontSize: "11px",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            cursor: "pointer",
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
             {/* Submit */}
-            <div style={{ marginTop: "10px" }}>
+            <div style={{ marginTop: "14px" }}>
               <button
                 type="submit"
                 disabled={isSubmitting}

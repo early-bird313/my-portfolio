@@ -13,6 +13,7 @@ export interface ProjectItem {
   tags: string[];
   gradient: string;
   imageUrl?: string;
+  galleryImages?: string[];
   videoUrl?: string;
   liveUrl?: string;
   githubUrl?: string;
@@ -349,11 +350,82 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
                 <span className="modal-client-tag">
                   ✦ Client / Industry: <strong>{selectedProject.clientType}</strong>
                 </span>
-                <span className="modal-status-badge">Completed & Verified</span>
               </div>
 
               <h2 className="modal-project-title">{selectedProject.title}</h2>
               <p className="modal-project-desc">{selectedProject.fullDetails}</p>
+
+              {/* Multiple Website Photos / Screenshots (Top to Bottom Showcase) */}
+              {selectedProject.galleryImages && selectedProject.galleryImages.length > 0 && (
+                <div style={{ marginTop: "24px", marginBottom: "28px" }}>
+                  <div
+                    className="modal-section-heading"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      color: "#ccff00",
+                    }}
+                  >
+                    <span>WEBSITE PREVIEW & SCREENSHOTS</span>
+                    <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)" }}>
+                      {selectedProject.galleryImages.length} {selectedProject.galleryImages.length === 1 ? "Image" : "Images"}
+                    </span>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "18px",
+                      marginTop: "12px",
+                    }}
+                  >
+                    {selectedProject.galleryImages.map((imgSrc, imgIdx) => (
+                      <div
+                        key={imgIdx}
+                        style={{
+                          borderRadius: "12px",
+                          overflow: "hidden",
+                          border: "1px solid rgba(255, 255, 255, 0.12)",
+                          backgroundColor: "#07080a",
+                          boxShadow: "0 8px 30px rgba(0, 0, 0, 0.6)",
+                          position: "relative",
+                        }}
+                      >
+                        <div
+                          style={{
+                            padding: "6px 12px",
+                            backgroundColor: "rgba(10, 10, 15, 0.85)",
+                            borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+                            fontSize: "11px",
+                            color: "#888899",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "6px",
+                          }}
+                        >
+                          <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#ff5f56", display: "inline-block" }} />
+                          <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#ffbd2e", display: "inline-block" }} />
+                          <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#27c93f", display: "inline-block" }} />
+                          <span style={{ marginLeft: "8px", fontFamily: "var(--font-mono, monospace)" }}>Screenshot #{imgIdx + 1}</span>
+                        </div>
+                        <img
+                          src={imgSrc}
+                          alt={`${selectedProject.title} view ${imgIdx + 1}`}
+                          style={{
+                            width: "100%",
+                            height: "auto",
+                            display: "block",
+                            objectFit: "cover",
+                          }}
+                          loading="lazy"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="modal-section-heading">KEY HIGHLIGHTS & ARCHITECTURE</div>
               <ul className="modal-highlights-list">

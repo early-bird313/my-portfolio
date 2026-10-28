@@ -17,6 +17,7 @@ export interface ProjectItem {
   tags: string[];
   gradient?: string;
   imageUrl?: string;
+  galleryImages?: string[];
   videoUrl?: string;
   liveUrl?: string;
   githubUrl?: string;
@@ -142,6 +143,7 @@ async function ensureTable(db: any) {
         tags TEXT,
         gradient TEXT,
         image_url TEXT,
+        gallery_images TEXT,
         video_url TEXT,
         live_url TEXT,
         github_url TEXT,
@@ -149,13 +151,17 @@ async function ensureTable(db: any) {
       )
     `).run();
 
+    try {
+      await db.prepare("ALTER TABLE projects ADD COLUMN gallery_images TEXT").run();
+    } catch (_) {}
+
     // Check if empty, seed default real projects if first time
     const countRes = await db.prepare("SELECT count(*) as count FROM projects").first();
     if (countRes && Number(countRes.count) === 0) {
       for (const p of DEFAULT_PROJECTS) {
         await db.prepare(`
-          INSERT INTO projects (id, category, category_label, title, description, full_details, client_type, highlights, tags, gradient, image_url, video_url, live_url, github_url, created_at)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          INSERT INTO projects (id, category, category_label, title, description, full_details, client_type, highlights, tags, gradient, image_url, gallery_images, video_url, live_url, github_url, created_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `).bind(
           p.id,
           p.category,
@@ -168,6 +174,7 @@ async function ensureTable(db: any) {
           JSON.stringify(p.tags || []),
           p.gradient || 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
           p.imageUrl || '',
+          JSON.stringify(p.galleryImages || []),
           p.videoUrl || '',
           p.liveUrl || '',
           p.githubUrl || '',
@@ -266,6 +273,7 @@ export default {
               tags: JSON.parse(row.tags || '[]'),
               gradient: row.gradient,
               imageUrl: row.image_url,
+              galleryImages: JSON.parse(row.gallery_images || '[]'),
               videoUrl: row.video_url,
               liveUrl: row.live_url,
               githubUrl: row.github_url,
@@ -311,6 +319,7 @@ export default {
             highlights = [],
             tags = [],
             imageUrl,
+            galleryImages = [],
             videoUrl,
             liveUrl,
             githubUrl,
@@ -343,6 +352,7 @@ export default {
             tags: Array.isArray(tags) ? tags : (typeof tags === 'string' ? tags.split(',').map((t: string) => t.trim()).filter(Boolean) : []),
             gradient: gradient || 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
             imageUrl: imageUrl || '/images/banner.jpg',
+            galleryImages: Array.isArray(galleryImages) ? galleryImages : [],
             videoUrl: videoUrl || '',
             liveUrl: liveUrl || '',
             githubUrl: githubUrl || '',
@@ -353,8 +363,8 @@ export default {
             try {
               await ensureTable(env.DB);
               await env.DB.prepare(`
-                INSERT INTO projects (id, category, category_label, title, description, full_details, client_type, highlights, tags, gradient, image_url, video_url, live_url, github_url, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO projects (id, category, category_label, title, description, full_details, client_type, highlights, tags, gradient, image_url, gallery_images, video_url, live_url, github_url, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
               `).bind(
                 newProject.id,
                 newProject.category,
@@ -367,6 +377,7 @@ export default {
                 JSON.stringify(newProject.tags),
                 newProject.gradient,
                 newProject.imageUrl,
+                JSON.stringify(newProject.galleryImages),
                 newProject.videoUrl,
                 newProject.liveUrl,
                 newProject.githubUrl,
