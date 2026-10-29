@@ -7,7 +7,7 @@ export interface Env {
 
 export interface ProjectItem {
   id: string;
-  category: 'websites' | 'applications' | 'video' | 'design';
+  category: 'websites-app' | 'automation' | 'video' | 'design' | string;
   categoryLabel: string;
   title: string;
   description: string;
@@ -27,8 +27,8 @@ export interface ProjectItem {
 const DEFAULT_PROJECTS: ProjectItem[] = [
   {
     id: "ai-news-monitor",
-    category: "applications",
-    categoryLabel: "Applications",
+    category: "automation",
+    categoryLabel: "Automation",
     title: "AI News Monitoring & Daily Digest System",
     description: "Autonomous AI intelligence platform powered by Google Gemini AI. Features continuous RSS crawling, strict deduplication, bilingual (Bangla & English) summarization, and scheduled broadcast digests to Telegram & Gmail.",
     fullDetails: "An automated real-time AI news monitoring engine. Continually fetches publications from ArXiv, TechCrunch, OpenAI, and Hacker News, deduplicates similar stories, scores impact (1-10) using Gemini AI, and sends scheduled morning, afternoon, and night digests to Telegram bot subscribers and email newsletters. Features an ultra-clean live dashboard.",
@@ -47,8 +47,8 @@ const DEFAULT_PROJECTS: ProjectItem[] = [
   },
   {
     id: "whatsapp-ai-agent",
-    category: "applications",
-    categoryLabel: "Applications",
+    category: "automation",
+    categoryLabel: "Automation",
     title: "Autonomous WhatsApp AI Agent",
     description: "24/7 intelligent conversational agent connected directly to WhatsApp via the Baileys WebSocket protocol. Handles contextual queries, dynamic intent recognition, and multi-turn conversations.",
     fullDetails: "An autonomous multi-turn customer communication bot connected to WhatsApp. Integrates persistent conversation history, context-aware prompt memory, automated customer lead intake, and fast WebSocket response pipelines.",
@@ -66,8 +66,8 @@ const DEFAULT_PROJECTS: ProjectItem[] = [
   },
   {
     id: "madrasha-management-software",
-    category: "applications",
-    categoryLabel: "Applications",
+    category: "websites-app",
+    categoryLabel: "Websites & App",
     title: "Madrasha & School Management Platform",
     description: "Comprehensive institutional administration system covering student enrollment, dynamic fee calculation, automated receipts, teacher attendance, and exam grading.",
     fullDetails: "A cloud-enabled educational administration platform designed to replace manual paperwork. Streamlines admissions tracking, fee calculations with auto-generated printable invoices, academic attendance registers, and gradebook management with role-based administrative portals.",
@@ -85,8 +85,8 @@ const DEFAULT_PROJECTS: ProjectItem[] = [
   },
   {
     id: "clothing-ecommerce-store",
-    category: "websites",
-    categoryLabel: "Websites",
+    category: "websites-app",
+    categoryLabel: "Websites & App",
     title: "Modern Lifestyle & Apparel E-Commerce",
     description: "High-performance digital fashion storefront with instantaneous product facet filtering, persistent drawer cart state, and responsive checkout flows.",
     fullDetails: "A fast modern fashion and apparel storefront built for effortless mobile and desktop conversion. Features multi-attribute filtering, instant optimistic cart drawer updates, and fluid micro-animations.",
@@ -104,8 +104,8 @@ const DEFAULT_PROJECTS: ProjectItem[] = [
   },
   {
     id: "3d-interactive-showcase",
-    category: "websites",
-    categoryLabel: "Websites",
+    category: "websites-app",
+    categoryLabel: "Websites & App",
     title: "Interactive 3D WebGL Web Experience",
     description: "Immersive 60fps 3D product showcase utilizing WebGL, Three.js shaders, and interactive camera parallax. Features real-time physics lighting and orbital controls.",
     fullDetails: "A high-fidelity interactive 3D WebGL application engineered for next-generation digital product reveals. Integrates custom GLSL shaders, camera parallax, physics-based rotation, and silky-smooth frame rates.",
@@ -153,6 +153,12 @@ async function ensureTable(db: any) {
 
     try {
       await db.prepare("ALTER TABLE projects ADD COLUMN gallery_images TEXT").run();
+    } catch (_) {}
+
+    try {
+      await db.prepare("UPDATE projects SET category = 'websites-app', category_label = 'Websites & App' WHERE category = 'websites'").run();
+      await db.prepare("UPDATE projects SET category = 'websites-app', category_label = 'Websites & App' WHERE category = 'applications' AND id = 'madrasha-management-software'").run();
+      await db.prepare("UPDATE projects SET category = 'automation', category_label = 'Automation' WHERE category = 'applications'").run();
     } catch (_) {}
 
     // Check if empty, seed default real projects if first time
@@ -261,24 +267,52 @@ export default {
               results = await env.DB.prepare(query).all();
             }
 
-            const formatted: ProjectItem[] = (results.results || []).map((row: any) => ({
-              id: row.id,
-              category: row.category,
-              categoryLabel: row.category_label,
-              title: row.title,
-              description: row.description,
-              fullDetails: row.full_details,
-              clientType: row.client_type,
-              highlights: JSON.parse(row.highlights || '[]'),
-              tags: JSON.parse(row.tags || '[]'),
-              gradient: row.gradient,
-              imageUrl: row.image_url,
-              galleryImages: JSON.parse(row.gallery_images || '[]'),
-              videoUrl: row.video_url,
-              liveUrl: row.live_url,
-              githubUrl: row.github_url,
-              createdAt: row.created_at,
-            }));
+            const categoryLabels: Record<string, string> = {
+              'websites-app': 'Websites & App',
+              websites: 'Websites & App',
+              applications: 'Websites & App',
+              automation: 'Automation',
+              video: 'Video Editing',
+              design: 'Graphic Design',
+            };
+
+            const formatted: ProjectItem[] = (results.results || []).map((row: any) => {
+              let cat = row.category;
+              let catLabel = row.category_label || categoryLabels[cat] || 'Showcase';
+              if (cat === 'websites' || cat === 'websites-app') {
+                cat = 'websites-app';
+                catLabel = 'Websites & App';
+              } else if (cat === 'applications') {
+                const isAuto = (row.title || '').toLowerCase().includes('ai') || (row.title || '').toLowerCase().includes('agent') || (row.title || '').toLowerCase().includes('bot') || (row.title || '').toLowerCase().includes('monitor');
+                cat = isAuto ? 'automation' : 'websites-app';
+                catLabel = isAuto ? 'Automation' : 'Websites & App';
+              } else if (cat === 'automation') {
+                catLabel = 'Automation';
+              } else if (cat === 'video') {
+                catLabel = 'Video Editing';
+              } else if (cat === 'design') {
+                catLabel = 'Graphic Design';
+              }
+
+              return {
+                id: row.id,
+                category: cat,
+                categoryLabel: catLabel,
+                title: row.title,
+                description: row.description,
+                fullDetails: row.full_details,
+                clientType: row.client_type,
+                highlights: JSON.parse(row.highlights || '[]'),
+                tags: JSON.parse(row.tags || '[]'),
+                gradient: row.gradient,
+                imageUrl: row.image_url,
+                galleryImages: JSON.parse(row.gallery_images || '[]'),
+                videoUrl: row.video_url,
+                liveUrl: row.live_url,
+                githubUrl: row.github_url,
+                createdAt: row.created_at,
+              };
+            });
 
             return new Response(JSON.stringify(formatted), {
               headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -312,7 +346,7 @@ export default {
           const body: any = await request.json();
           const {
             title,
-            category = 'websites',
+            category = 'websites-app',
             description,
             fullDetails,
             clientType,
@@ -334,8 +368,10 @@ export default {
           }
 
           const categoryLabels: Record<string, string> = {
-            websites: 'Websites',
-            applications: 'Applications',
+            'websites-app': 'Websites & App',
+            websites: 'Websites & App',
+            applications: 'Websites & App',
+            automation: 'Automation',
             video: 'Video Editing',
             design: 'Graphic Design',
           };

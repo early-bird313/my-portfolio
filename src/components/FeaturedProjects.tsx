@@ -3,7 +3,7 @@ import "./styles/Sections.css";
 
 export interface ProjectItem {
   id: string;
-  category: "websites" | "applications" | "video" | "design";
+  category: "websites-app" | "automation" | "video" | "design" | string;
   categoryLabel: string;
   title: string;
   description: string;
@@ -22,8 +22,8 @@ export interface ProjectItem {
 export const projectsData: ProjectItem[] = [
   {
     id: "ai-news-monitor",
-    category: "applications",
-    categoryLabel: "Applications",
+    category: "automation",
+    categoryLabel: "Automation",
     title: "AI News Monitoring & Daily Digest System",
     description: "Autonomous AI intelligence platform powered by Google Gemini AI. Features continuous RSS crawling, strict deduplication, bilingual (Bangla & English) summarization, and scheduled broadcast digests to Telegram & Gmail.",
     fullDetails: "An automated real-time AI news monitoring engine. Continually fetches publications from ArXiv, TechCrunch, OpenAI, and Hacker News, deduplicates similar stories, scores impact (1-10) using Gemini AI, and sends scheduled morning, afternoon, and night digests to Telegram bot subscribers and email newsletters. Features an ultra-clean live dashboard.",
@@ -42,8 +42,8 @@ export const projectsData: ProjectItem[] = [
   },
   {
     id: "whatsapp-ai-agent",
-    category: "applications",
-    categoryLabel: "Applications",
+    category: "automation",
+    categoryLabel: "Automation",
     title: "Autonomous WhatsApp AI Agent",
     description: "24/7 intelligent conversational agent connected directly to WhatsApp via the Baileys WebSocket protocol. Handles contextual queries, dynamic intent recognition, and multi-turn conversations.",
     fullDetails: "An autonomous multi-turn customer communication bot connected to WhatsApp. Integrates persistent conversation history, context-aware prompt memory, automated customer lead intake, and fast WebSocket response pipelines.",
@@ -61,8 +61,8 @@ export const projectsData: ProjectItem[] = [
   },
   {
     id: "madrasha-management-software",
-    category: "applications",
-    categoryLabel: "Applications",
+    category: "websites-app",
+    categoryLabel: "Websites & App",
     title: "Madrasha & School Management Platform",
     description: "Comprehensive institutional administration system covering student enrollment, dynamic fee calculation, automated receipts, teacher attendance, and exam grading.",
     fullDetails: "A cloud-enabled educational administration platform designed to replace manual paperwork. Streamlines admissions tracking, fee calculations with auto-generated printable invoices, academic attendance registers, and gradebook management with role-based administrative portals.",
@@ -80,8 +80,8 @@ export const projectsData: ProjectItem[] = [
   },
   {
     id: "clothing-ecommerce-store",
-    category: "websites",
-    categoryLabel: "Websites",
+    category: "websites-app",
+    categoryLabel: "Websites & App",
     title: "Modern Lifestyle & Apparel E-Commerce",
     description: "High-performance digital fashion storefront with instantaneous product facet filtering, persistent drawer cart state, and responsive checkout flows.",
     fullDetails: "A fast modern fashion and apparel storefront built for effortless mobile and desktop conversion. Features multi-attribute filtering, instant optimistic cart drawer updates, and fluid micro-animations.",
@@ -99,8 +99,8 @@ export const projectsData: ProjectItem[] = [
   },
   {
     id: "3d-interactive-showcase",
-    category: "websites",
-    categoryLabel: "Websites",
+    category: "websites-app",
+    categoryLabel: "Websites & App",
     title: "Interactive 3D WebGL Web Experience",
     description: "Immersive 60fps 3D product showcase utilizing WebGL, Three.js shaders, and interactive camera parallax. Features real-time physics lighting and orbital controls.",
     fullDetails: "A high-fidelity interactive 3D WebGL application engineered for next-generation digital product reveals. Integrates custom GLSL shaders, camera parallax, physics-based rotation, and silky-smooth frame rates.",
@@ -153,11 +153,35 @@ export const renderProjectThumbnailMockup = (projectId: string, imageUrl?: strin
   );
 };
 
-type CategoryFilter = "all" | "websites" | "applications" | "video" | "design";
+type CategoryFilter = "all" | "websites-app" | "automation" | "video" | "design";
 
 interface FeaturedProjectsProps {
   refreshTrigger?: number;
 }
+
+const normalizeCategory = (item: ProjectItem): ProjectItem => {
+  let cat = item.category;
+  let label = item.categoryLabel;
+  if (cat === "websites" || cat === "websites-app") {
+    cat = "websites-app";
+    label = "Websites & App";
+  } else if (cat === "applications") {
+    const isAuto =
+      (item.title || "").toLowerCase().includes("ai") ||
+      (item.title || "").toLowerCase().includes("agent") ||
+      (item.title || "").toLowerCase().includes("bot") ||
+      (item.title || "").toLowerCase().includes("monitor");
+    cat = isAuto ? "automation" : "websites-app";
+    label = isAuto ? "Automation" : "Websites & App";
+  } else if (cat === "automation") {
+    label = "Automation";
+  } else if (cat === "video") {
+    label = "Video Editing";
+  } else if (cat === "design") {
+    label = "Graphic Design";
+  }
+  return { ...item, category: cat, categoryLabel: label };
+};
 
 const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) => {
   const [activeFilter, setActiveFilter] = useState<CategoryFilter>("all");
@@ -182,7 +206,7 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
       })
       .then((data) => {
         if (Array.isArray(data) && data.length > 0) {
-          setItems(data);
+          setItems(data.map(normalizeCategory));
         }
       })
       .catch(() => {});
@@ -191,7 +215,30 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
   const filteredProjects =
     activeFilter === "all"
       ? items
-      : items.filter((item) => item.category === activeFilter);
+      : items.filter((item) => {
+          if (activeFilter === "websites-app") {
+            return (
+              item.category === "websites-app" ||
+              item.category === "websites" ||
+              (item.category === "applications" &&
+                !item.title.toLowerCase().includes("ai") &&
+                !item.title.toLowerCase().includes("agent") &&
+                !item.title.toLowerCase().includes("bot") &&
+                !item.title.toLowerCase().includes("monitor"))
+            );
+          }
+          if (activeFilter === "automation") {
+            return (
+              item.category === "automation" ||
+              (item.category === "applications" &&
+                (item.title.toLowerCase().includes("ai") ||
+                  item.title.toLowerCase().includes("agent") ||
+                  item.title.toLowerCase().includes("bot") ||
+                  item.title.toLowerCase().includes("monitor")))
+            );
+          }
+          return item.category === activeFilter;
+        });
 
   // Duplicate filtered projects to ensure a continuous infinite seamless loop from left to right
   const loopMultiplier = Math.max(2, Math.ceil(10 / Math.max(1, filteredProjects.length)));
@@ -219,16 +266,16 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
             All Works ({items.length})
           </button>
           <button
-            className={`filter-tab-btn ${activeFilter === "websites" ? "active" : ""}`}
-            onClick={() => setActiveFilter("websites")}
+            className={`filter-tab-btn ${activeFilter === "websites-app" ? "active" : ""}`}
+            onClick={() => setActiveFilter("websites-app")}
           >
-            Websites
+            Websites & App
           </button>
           <button
-            className={`filter-tab-btn ${activeFilter === "applications" ? "active" : ""}`}
-            onClick={() => setActiveFilter("applications")}
+            className={`filter-tab-btn ${activeFilter === "automation" ? "active" : ""}`}
+            onClick={() => setActiveFilter("automation")}
           >
-            Applications
+            Automation
           </button>
           <button
             className={`filter-tab-btn ${activeFilter === "video" ? "active" : ""}`}

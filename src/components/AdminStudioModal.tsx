@@ -21,7 +21,7 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
   // Form State
   const [formData, setFormData] = useState({
     title: "",
-    category: "websites" as "websites" | "applications" | "video" | "design",
+    category: "websites-app" as "websites-app" | "automation" | "video" | "design" | string,
     clientType: "",
     description: "",
     fullDetails: "",
@@ -206,7 +206,7 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
         setFormSuccess("Project published successfully into live showcase!");
         setFormData({
           title: "",
-          category: "websites",
+          category: "websites-app",
           clientType: "",
           description: "",
           fullDetails: "",
@@ -266,7 +266,32 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
   if (!isOpen) return null;
 
   const filtered =
-    filterCat === "all" ? projects : projects.filter((p) => p.category === filterCat);
+    filterCat === "all"
+      ? projects
+      : projects.filter((p) => {
+          if (filterCat === "websites-app") {
+            return (
+              p.category === "websites-app" ||
+              p.category === "websites" ||
+              (p.category === "applications" &&
+                !p.title.toLowerCase().includes("ai") &&
+                !p.title.toLowerCase().includes("agent") &&
+                !p.title.toLowerCase().includes("bot") &&
+                !p.title.toLowerCase().includes("monitor"))
+            );
+          }
+          if (filterCat === "automation") {
+            return (
+              p.category === "automation" ||
+              (p.category === "applications" &&
+                (p.title.toLowerCase().includes("ai") ||
+                  p.title.toLowerCase().includes("agent") ||
+                  p.title.toLowerCase().includes("bot") ||
+                  p.title.toLowerCase().includes("monitor")))
+            );
+          }
+          return p.category === filterCat;
+        });
 
   return (
     <div
@@ -389,8 +414,8 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
               </label>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "10px" }}>
                 {[
-                  { id: "websites", label: "🌐 Websites" },
-                  { id: "applications", label: "🤖 Applications" },
+                  { id: "websites-app", label: "🌐 Websites & App" },
+                  { id: "automation", label: "⚡ Automation" },
                   { id: "video", label: "🎬 Video Editing" },
                   { id: "design", label: "🎨 Graphic Design" },
                 ].map((c) => (
@@ -970,10 +995,10 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
             <div style={{ display: "flex", gap: "8px", marginBottom: "16px", flexWrap: "wrap" }}>
               {[
                 { id: "all", label: `All (${projects.length})` },
-                { id: "websites", label: "Websites" },
-                { id: "applications", label: "Applications" },
-                { id: "video", label: "Video" },
-                { id: "design", label: "Design" },
+                { id: "websites-app", label: "Websites & App" },
+                { id: "automation", label: "Automation" },
+                { id: "video", label: "Video Editing" },
+                { id: "design", label: "Graphic Design" },
               ].map((b) => (
                 <button
                   key={b.id}
@@ -1020,7 +1045,15 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
                     <div>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "4px" }}>
                         <span style={{ fontSize: "10px", color: config.colors.accent, textTransform: "uppercase", letterSpacing: "1px" }}>
-                          {p.category}
+                          {p.category === "websites-app" || p.category === "websites"
+                            ? "Websites & App"
+                            : p.category === "automation"
+                            ? "Automation"
+                            : p.category === "video"
+                            ? "Video Editing"
+                            : p.category === "design"
+                            ? "Graphic Design"
+                            : p.categoryLabel || p.category}
                         </span>
                         <span style={{ fontSize: "11px", color: "#555" }}>•</span>
                         <span style={{ fontSize: "12px", color: "#888" }}>{p.clientType || "Client"}</span>
