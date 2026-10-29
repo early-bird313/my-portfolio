@@ -451,9 +451,16 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
                   </div>
                 </div>
 
-                {/* Card Body: Only Title and Tech Tags */}
+                {/* Card Body: Title, Subtitle/Description, and Tech Tags */}
                 <div className="project-info-body">
-                  <h3 className="project-title">{project.title}</h3>
+                  <div className="project-title-desc-wrap">
+                    <h3 className="project-title">{project.title}</h3>
+                    {project.description && (
+                      <p className="project-card-desc">
+                        {project.description}
+                      </p>
+                    )}
+                  </div>
 
                   {project.tags && project.tags.length > 0 && (
                     <div className="project-tech-tags">
@@ -685,6 +692,27 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
                         ))}
                       </div>
                     </>
+                  )}
+                </>
+              ) : selectedProject.category === "video" ? (
+                <>
+                  {/* Video Editing Modal View */}
+                  <h2 className="modal-project-title" style={{ marginBottom: "12px" }}>
+                    {selectedProject.title}
+                  </h2>
+
+                  {/* Subtitle / Short Summary */}
+                  {selectedProject.description && (
+                    <p style={{ color: "var(--accent, #ccff00)", fontSize: "15px", fontWeight: 600, lineHeight: "1.6", marginBottom: "16px" }}>
+                      {selectedProject.description}
+                    </p>
+                  )}
+
+                  {/* Full Details / Video Story */}
+                  {selectedProject.fullDetails && selectedProject.fullDetails !== selectedProject.description && (
+                    <div style={{ color: "#d1d5db", fontSize: "14.5px", lineHeight: "1.7", marginBottom: "26px", whiteSpace: "pre-line" }}>
+                      {selectedProject.fullDetails}
+                    </div>
                   )}
                 </>
               ) : (

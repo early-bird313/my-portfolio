@@ -576,70 +576,95 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
               </div>
             </div>
 
-            {/* Description */}
+            {/* Description / Subtitle */}
             <div>
-              <label style={{ display: "block", fontSize: "11px", color: "#888899", textTransform: "uppercase", marginBottom: "6px" }}>
-                {formData.category === "automation" ? "Short Card Summary (সংক্ষিপ্ত বিবরণ) *" : "Short Card Summary *"}
+              <label style={{ display: "block", fontSize: "11px", color: formData.category === "video" ? config.colors.accent : "#888899", textTransform: "uppercase", marginBottom: "6px", fontWeight: formData.category === "video" ? 700 : 500 }}>
+                {formData.category === "automation"
+                  ? "Short Card Summary (সংক্ষিপ্ত বিবরণ) *"
+                  : formData.category === "video"
+                  ? "Subtitle / Card Summary (কার্ডের সাবটাইটেল / বিবরণ) *"
+                  : "Short Card Summary *"}
               </label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 rows={2}
-                placeholder="2-line executive summary displayed on the card..."
+                placeholder={
+                  formData.category === "video"
+                    ? "ভিডিওর সাবটাইটেল বা সংক্ষিপ্ত বিবরণ যা কার্ডের টাইটেলের নিচে দেখাবে এবং ফাঁকা জায়গা ফিলাপ করবে..."
+                    : "2-line executive summary displayed on the card..."
+                }
                 required
-                style={{ width: "100%", padding: "10px 14px", backgroundColor: "#07080a", border: "1px solid #222533", borderRadius: "8px", color: "#fff", fontSize: "13px", boxSizing: "border-box", resize: "vertical" }}
+                style={{ width: "100%", padding: "10px 14px", backgroundColor: "#07080a", border: `1px solid ${formData.category === "video" ? "rgba(204, 255, 0, 0.35)" : "#222533"}`, borderRadius: "8px", color: "#fff", fontSize: "13px", boxSizing: "border-box", resize: "vertical" }}
               />
             </div>
 
             {/* The Problem & Solution / Full Details & Highlights */}
-            <div style={{ display: "grid", gridTemplateColumns: formData.category === "automation" ? "1fr" : "1fr 1fr", gap: "12px" }}>
+            {formData.category === "video" ? (
               <div>
-                <label style={{ display: "block", fontSize: "11px", color: formData.category === "automation" ? config.colors.accent : "#888899", textTransform: "uppercase", marginBottom: "6px", fontWeight: formData.category === "automation" ? 700 : 500 }}>
-                  {formData.category === "automation" ? "🎯 The Problem & Solution (সমস্যা ও সমাধান) *" : "Full Case Study / Architecture"}
+                <label style={{ display: "block", fontSize: "11px", color: config.colors.accent, textTransform: "uppercase", marginBottom: "6px", fontWeight: 700 }}>
+                  🎬 Video Details & Context (ভিডিওর বিস্তারিত বিবরণ)
                 </label>
                 <textarea
                   value={formData.fullDetails}
                   onChange={(e) => setFormData({ ...formData, fullDetails: e.target.value })}
-                  rows={formData.category === "automation" ? 5 : 4}
-                  placeholder={
-                    formData.category === "automation"
-                      ? "Explain what manual bottleneck existed, and how this AI automation solved it...\n\nExample:\nProblem: Handling repetitive customer inquiries manually took 4-5 hours every day.\nSolution: Developed an autonomous agent powered by Gemini AI & WebSockets that contextually answers queries 24/7."
-                      : "Explain how it was built, challenges solved, results achieved..."
-                  }
-                  style={{ width: "100%", padding: "10px 14px", backgroundColor: "#07080a", border: `1px solid ${formData.category === "automation" ? "rgba(204, 255, 0, 0.35)" : "#222533"}`, borderRadius: "8px", color: "#fff", fontSize: "13px", boxSizing: "border-box", resize: "vertical" }}
-                />
-              </div>
-              <div>
-                <label style={{ display: "block", fontSize: "11px", color: formData.category === "automation" ? config.colors.accent : "#888899", textTransform: "uppercase", marginBottom: "6px", fontWeight: formData.category === "automation" ? 700 : 500 }}>
-                  {formData.category === "automation" ? "⚡ Key Highlights (মূল বৈশিষ্ট্যসমূহ - One per line) *" : "Key Highlights (One per line)"}
-                </label>
-                <textarea
-                  value={formData.highlights}
-                  onChange={(e) => setFormData({ ...formData, highlights: e.target.value })}
-                  rows={formData.category === "automation" ? 5 : 4}
-                  placeholder={
-                    formData.category === "automation"
-                      ? "24/7 autonomous WhatsApp message answering\nTF-IDF deduplication algorithm\nAutomated daily email & Telegram broadcast"
-                      : "Sub-second speed\n100% automated deduplication\nCustom motion graphics"
-                  }
+                  rows={4}
+                  placeholder="ভিডিওটির বিষয়বস্তু, এডিটিং স্টাইল, বা ক্লায়েন্ট ডেসক্রিপশন লিখুন..."
                   style={{ width: "100%", padding: "10px 14px", backgroundColor: "#07080a", border: "1px solid #222533", borderRadius: "8px", color: "#fff", fontSize: "13px", boxSizing: "border-box", resize: "vertical" }}
                 />
               </div>
-            </div>
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: formData.category === "automation" ? "1fr" : "1fr 1fr", gap: "12px" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "11px", color: formData.category === "automation" ? config.colors.accent : "#888899", textTransform: "uppercase", marginBottom: "6px", fontWeight: formData.category === "automation" ? 700 : 500 }}>
+                    {formData.category === "automation" ? "🎯 The Problem & Solution (সমস্যা ও সমাধান) *" : "Full Case Study / Architecture"}
+                  </label>
+                  <textarea
+                    value={formData.fullDetails}
+                    onChange={(e) => setFormData({ ...formData, fullDetails: e.target.value })}
+                    rows={formData.category === "automation" ? 5 : 4}
+                    placeholder={
+                      formData.category === "automation"
+                        ? "Explain what manual bottleneck existed, and how this AI automation solved it...\n\nExample:\nProblem: Handling repetitive customer inquiries manually took 4-5 hours every day.\nSolution: Developed an autonomous agent powered by Gemini AI & WebSockets that contextually answers queries 24/7."
+                        : "Explain how it was built, challenges solved, results achieved..."
+                    }
+                    style={{ width: "100%", padding: "10px 14px", backgroundColor: "#07080a", border: `1px solid ${formData.category === "automation" ? "rgba(204, 255, 0, 0.35)" : "#222533"}`, borderRadius: "8px", color: "#fff", fontSize: "13px", boxSizing: "border-box", resize: "vertical" }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: "block", fontSize: "11px", color: formData.category === "automation" ? config.colors.accent : "#888899", textTransform: "uppercase", marginBottom: "6px", fontWeight: formData.category === "automation" ? 700 : 500 }}>
+                    {formData.category === "automation" ? "⚡ Key Highlights (মূল বৈশিষ্ট্যসমূহ - One per line) *" : "Key Highlights (One per line)"}
+                  </label>
+                  <textarea
+                    value={formData.highlights}
+                    onChange={(e) => setFormData({ ...formData, highlights: e.target.value })}
+                    rows={formData.category === "automation" ? 5 : 4}
+                    placeholder={
+                      formData.category === "automation"
+                        ? "24/7 autonomous WhatsApp message answering\nTF-IDF deduplication algorithm\nAutomated daily email & Telegram broadcast"
+                        : "Sub-second speed\n100% automated deduplication\nCustom motion graphics"
+                    }
+                    style={{ width: "100%", padding: "10px 14px", backgroundColor: "#07080a", border: "1px solid #222533", borderRadius: "8px", color: "#fff", fontSize: "13px", boxSizing: "border-box", resize: "vertical" }}
+                  />
+                </div>
+              </div>
+            )}
 
-            {/* Tags / Tech Stack */}
-            <div>
-              <label style={{ display: "block", fontSize: "11px", color: formData.category === "automation" ? config.colors.accent : "#888899", textTransform: "uppercase", marginBottom: "6px", fontWeight: formData.category === "automation" ? 700 : 500 }}>
-                {formData.category === "automation" ? "🛠️ Tech Stack (টেক স্ট্যাক - Comma separated) *" : "Tags & Tech Stack (Comma separated)"}
-              </label>
-              <input
-                type="text"
-                value={formData.tags}
-                onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                placeholder={formData.category === "automation" ? "Python, FastAPI, Gemini AI, LangChain, n8n, WebSockets, Telegram Bot" : "Python, FastAPI, Gemini AI, Premiere Pro, Photoshop, Next.js"}
-                style={{ width: "100%", padding: "10px 14px", backgroundColor: "#07080a", border: "1px solid #222533", borderRadius: "8px", color: "#fff", fontSize: "13px", boxSizing: "border-box" }}
-              />
-            </div>
+            {/* Tags / Tech Stack (Hidden for video) */}
+            {formData.category !== "video" && (
+              <div>
+                <label style={{ display: "block", fontSize: "11px", color: formData.category === "automation" ? config.colors.accent : "#888899", textTransform: "uppercase", marginBottom: "6px", fontWeight: formData.category === "automation" ? 700 : 500 }}>
+                  {formData.category === "automation" ? "🛠️ Tech Stack (টেক স্ট্যাক - Comma separated) *" : "Tags & Tech Stack (Comma separated)"}
+                </label>
+                <input
+                  type="text"
+                  value={formData.tags}
+                  onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
+                  placeholder={formData.category === "automation" ? "Python, FastAPI, Gemini AI, LangChain, n8n, WebSockets, Telegram Bot" : "Python, FastAPI, Gemini AI, Premiere Pro, Photoshop, Next.js"}
+                  style={{ width: "100%", padding: "10px 14px", backgroundColor: "#07080a", border: "1px solid #222533", borderRadius: "8px", color: "#fff", fontSize: "13px", boxSizing: "border-box" }}
+                />
+              </div>
+            )}
 
             {/* Links: Live, GitHub, Video */}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" }}>
