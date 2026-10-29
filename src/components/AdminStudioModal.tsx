@@ -229,7 +229,7 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
       highlights: formData.highlights.split("\n").map((h) => h.trim()).filter(Boolean),
       tags: formData.tags.split(",").map((t) => t.trim()).filter(Boolean),
       imageUrl: formData.imageUrl || "/images/banner.jpg",
-      galleryImages: formData.galleryImages,
+      galleryImages: formData.category === "automation" ? [] : formData.galleryImages,
       videoUrl: formData.videoUrl || "",
       liveUrl: formData.liveUrl || "",
       githubUrl: formData.githubUrl || "",
@@ -526,30 +526,51 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
               </div>
             </div>
 
+            {formData.category === "automation" && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  padding: "10px 14px",
+                  backgroundColor: "rgba(204, 255, 0, 0.08)",
+                  border: "1px solid rgba(204, 255, 0, 0.3)",
+                  borderRadius: "8px",
+                  fontSize: "12px",
+                  color: config.colors.accent,
+                }}
+              >
+                <span style={{ fontSize: "16px" }}>⚡</span>
+                <span>
+                  <strong>Automation Architecture Mode:</strong> শুধুমাত্র থাম্বনেইল থাকবে এবং প্রজেক্টের যাবতীয় বিবরণ টেক্সটের মাধ্যমে (The Problem & Solution, Highlights, Tech Stack) সুন্দরভাবে উপস্থাপিত হবে।
+                </span>
+              </div>
+            )}
+
             {/* Title & Client Type */}
             <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: "12px" }}>
               <div>
-                <label style={{ display: "block", fontSize: "11px", color: "#888899", textTransform: "uppercase", marginBottom: "6px" }}>
-                  Project Title *
+                <label style={{ display: "block", fontSize: "11px", color: formData.category === "automation" ? config.colors.accent : "#888899", textTransform: "uppercase", marginBottom: "6px", fontWeight: formData.category === "automation" ? 700 : 500 }}>
+                  {formData.category === "automation" ? "Project Title (প্রজেক্টের নাম) *" : "Project Title *"}
                 </label>
                 <input
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="e.g. AI News Monitoring Bot or Modern Brand Identity"
+                  placeholder={formData.category === "automation" ? "যেমন: Autonomous WhatsApp AI Agent বা Gemini AI News Monitor" : "e.g. Modern Lifestyle & Apparel E-Commerce"}
                   required
                   style={{ width: "100%", padding: "10px 14px", backgroundColor: "#07080a", border: "1px solid #222533", borderRadius: "8px", color: "#fff", fontSize: "13px", boxSizing: "border-box" }}
                 />
               </div>
               <div>
                 <label style={{ display: "block", fontSize: "11px", color: "#888899", textTransform: "uppercase", marginBottom: "6px" }}>
-                  Client / Industry Type
+                  {formData.category === "automation" ? "Use Case / Industry (ব্যবহার ক্ষেত্র)" : "Client / Industry Type"}
                 </label>
                 <input
                   type="text"
                   value={formData.clientType}
                   onChange={(e) => setFormData({ ...formData, clientType: e.target.value })}
-                  placeholder="e.g. AI Startup, Fintech, Brand"
+                  placeholder={formData.category === "automation" ? "যেমন: AI Support Automation, Workflow Intelligence" : "e.g. AI Startup, Fintech, Brand"}
                   style={{ width: "100%", padding: "10px 14px", backgroundColor: "#07080a", border: "1px solid #222533", borderRadius: "8px", color: "#fff", fontSize: "13px", boxSizing: "border-box" }}
                 />
               </div>
@@ -558,7 +579,7 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
             {/* Description */}
             <div>
               <label style={{ display: "block", fontSize: "11px", color: "#888899", textTransform: "uppercase", marginBottom: "6px" }}>
-                Short Card Summary *
+                {formData.category === "automation" ? "Short Card Summary (সংক্ষিপ্ত বিবরণ) *" : "Short Card Summary *"}
               </label>
               <textarea
                 value={formData.description}
@@ -570,44 +591,52 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
               />
             </div>
 
-            {/* Full Details & Highlights */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+            {/* The Problem & Solution / Full Details & Highlights */}
+            <div style={{ display: "grid", gridTemplateColumns: formData.category === "automation" ? "1fr" : "1fr 1fr", gap: "12px" }}>
               <div>
-                <label style={{ display: "block", fontSize: "11px", color: "#888899", textTransform: "uppercase", marginBottom: "6px" }}>
-                  Full Case Study / Architecture
+                <label style={{ display: "block", fontSize: "11px", color: formData.category === "automation" ? config.colors.accent : "#888899", textTransform: "uppercase", marginBottom: "6px", fontWeight: formData.category === "automation" ? 700 : 500 }}>
+                  {formData.category === "automation" ? "🎯 The Problem & Solution (সমস্যা ও সমাধান) *" : "Full Case Study / Architecture"}
                 </label>
                 <textarea
                   value={formData.fullDetails}
                   onChange={(e) => setFormData({ ...formData, fullDetails: e.target.value })}
-                  rows={4}
-                  placeholder="Explain how it was built, challenges solved, results achieved..."
-                  style={{ width: "100%", padding: "10px 14px", backgroundColor: "#07080a", border: "1px solid #222533", borderRadius: "8px", color: "#fff", fontSize: "13px", boxSizing: "border-box", resize: "vertical" }}
+                  rows={formData.category === "automation" ? 5 : 4}
+                  placeholder={
+                    formData.category === "automation"
+                      ? "Explain what manual bottleneck existed, and how this AI automation solved it...\n\nExample:\nProblem: Handling repetitive customer inquiries manually took 4-5 hours every day.\nSolution: Developed an autonomous agent powered by Gemini AI & WebSockets that contextually answers queries 24/7."
+                      : "Explain how it was built, challenges solved, results achieved..."
+                  }
+                  style={{ width: "100%", padding: "10px 14px", backgroundColor: "#07080a", border: `1px solid ${formData.category === "automation" ? "rgba(204, 255, 0, 0.35)" : "#222533"}`, borderRadius: "8px", color: "#fff", fontSize: "13px", boxSizing: "border-box", resize: "vertical" }}
                 />
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "11px", color: "#888899", textTransform: "uppercase", marginBottom: "6px" }}>
-                  Key Highlights (One per line)
+                <label style={{ display: "block", fontSize: "11px", color: formData.category === "automation" ? config.colors.accent : "#888899", textTransform: "uppercase", marginBottom: "6px", fontWeight: formData.category === "automation" ? 700 : 500 }}>
+                  {formData.category === "automation" ? "⚡ Key Highlights (মূল বৈশিষ্ট্যসমূহ - One per line) *" : "Key Highlights (One per line)"}
                 </label>
                 <textarea
                   value={formData.highlights}
                   onChange={(e) => setFormData({ ...formData, highlights: e.target.value })}
-                  rows={4}
-                  placeholder="Sub-second speed&#10;100% automated deduplication&#10;Custom motion graphics"
+                  rows={formData.category === "automation" ? 5 : 4}
+                  placeholder={
+                    formData.category === "automation"
+                      ? "24/7 autonomous WhatsApp message answering\nTF-IDF deduplication algorithm\nAutomated daily email & Telegram broadcast"
+                      : "Sub-second speed\n100% automated deduplication\nCustom motion graphics"
+                  }
                   style={{ width: "100%", padding: "10px 14px", backgroundColor: "#07080a", border: "1px solid #222533", borderRadius: "8px", color: "#fff", fontSize: "13px", boxSizing: "border-box", resize: "vertical" }}
                 />
               </div>
             </div>
 
-            {/* Tags */}
+            {/* Tags / Tech Stack */}
             <div>
-              <label style={{ display: "block", fontSize: "11px", color: "#888899", textTransform: "uppercase", marginBottom: "6px" }}>
-                Tags & Tech Stack (Comma separated)
+              <label style={{ display: "block", fontSize: "11px", color: formData.category === "automation" ? config.colors.accent : "#888899", textTransform: "uppercase", marginBottom: "6px", fontWeight: formData.category === "automation" ? 700 : 500 }}>
+                {formData.category === "automation" ? "🛠️ Tech Stack (টেক স্ট্যাক - Comma separated) *" : "Tags & Tech Stack (Comma separated)"}
               </label>
               <input
                 type="text"
                 value={formData.tags}
                 onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                placeholder="Python, FastAPI, Gemini AI, Premiere Pro, Photoshop, Next.js"
+                placeholder={formData.category === "automation" ? "Python, FastAPI, Gemini AI, LangChain, n8n, WebSockets, Telegram Bot" : "Python, FastAPI, Gemini AI, Premiere Pro, Photoshop, Next.js"}
                 style={{ width: "100%", padding: "10px 14px", backgroundColor: "#07080a", border: "1px solid #222533", borderRadius: "8px", color: "#fff", fontSize: "13px", boxSizing: "border-box" }}
               />
             </div>
@@ -655,8 +684,8 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
             {/* Image / Thumbnail Section */}
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                <label style={{ fontSize: "11px", color: "#888899", textTransform: "uppercase" }}>
-                  Project Thumbnail / Image
+                <label style={{ fontSize: "11px", color: formData.category === "automation" ? config.colors.accent : "#888899", textTransform: "uppercase", fontWeight: formData.category === "automation" ? 700 : 500 }}>
+                  {formData.category === "automation" ? "Project Thumbnail / Flow Banner (থাম্বনেইল / ব্যানার) *" : "Project Thumbnail / Image"}
                 </label>
                 <div style={{ display: "flex", gap: "6px" }}>
                   <button
@@ -827,8 +856,9 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
               )}
             </div>
 
-            {/* Gallery Images / Website Screenshots (Top-to-Bottom Showcase) */}
-            <div style={{ marginTop: "16px", padding: "14px", backgroundColor: "#0b0c10", borderRadius: "10px", border: "1px solid #1f2230" }}>
+            {/* Gallery Images / Website Screenshots (Top-to-Bottom Showcase, hidden for Automation) */}
+            {formData.category !== "automation" && (
+              <div style={{ marginTop: "16px", padding: "14px", backgroundColor: "#0b0c10", borderRadius: "10px", border: "1px solid #1f2230" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
                 <div>
                   <label style={{ fontSize: "11px", color: "#ccff00", textTransform: "uppercase", fontWeight: 700, letterSpacing: "0.5px" }}>
@@ -1047,6 +1077,7 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
                 </div>
               )}
             </div>
+            )}
 
             {/* Submit */}
             <div style={{ marginTop: "14px" }}>

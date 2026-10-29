@@ -392,106 +392,192 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
             </div>
 
             {/* Modal Content Body */}
+            {/* Modal Content Body */}
             <div className="modal-content-body">
               <div className="modal-meta-row">
                 <span className="modal-client-tag">
-                  ✦ Client / Industry: <strong>{selectedProject.clientType}</strong>
+                  ✦ Client / Industry: <strong>{selectedProject.clientType || "Direct Showcase"}</strong>
                 </span>
+                {selectedProject.category === "automation" && (
+                  <span
+                    style={{
+                      fontSize: "11px",
+                      color: "#ccff00",
+                      fontFamily: "var(--font-mono, monospace)",
+                      fontWeight: 700,
+                      letterSpacing: "1px",
+                    }}
+                  >
+                    ⚡ AI & WORKFLOW AUTOMATION
+                  </span>
+                )}
               </div>
 
-              <h2 className="modal-project-title">{selectedProject.title}</h2>
-              <p className="modal-project-desc">{selectedProject.fullDetails}</p>
+              {selectedProject.category === "automation" ? (
+                <>
+                  {/* প্রজেক্টের নাম */}
+                  <h2 className="modal-project-title" style={{ marginBottom: "12px" }}>
+                    {selectedProject.title}
+                  </h2>
 
-              {/* Multiple Website Photos / Screenshots (Top to Bottom Showcase) */}
-              {selectedProject.galleryImages && selectedProject.galleryImages.length > 0 && (
-                <div style={{ marginTop: "24px", marginBottom: "28px" }}>
+                  {/* সংক্ষিপ্ত বিবরণ (যদি থাকে) */}
+                  {selectedProject.description && selectedProject.description !== selectedProject.fullDetails && (
+                    <p style={{ color: "#94a3b8", fontSize: "14px", lineHeight: "1.6", marginBottom: "22px" }}>
+                      {selectedProject.description}
+                    </p>
+                  )}
+
+                  {/* The Problem & Solution */}
+                  <div className="modal-section-heading" style={{ color: "#ccff00", display: "flex", alignItems: "center", gap: "8px", marginTop: "16px" }}>
+                    <span>🎯 THE PROBLEM & SOLUTION</span>
+                  </div>
                   <div
-                    className="modal-section-heading"
                     style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      color: "#ccff00",
+                      backgroundColor: "rgba(204, 255, 0, 0.04)",
+                      border: "1px solid rgba(204, 255, 0, 0.2)",
+                      borderLeft: "4px solid #ccff00",
+                      borderRadius: "8px",
+                      padding: "16px 20px",
+                      marginBottom: "24px",
+                      color: "#e2e8f0",
+                      fontSize: "14px",
+                      lineHeight: "1.75",
+                      whiteSpace: "pre-line",
                     }}
                   >
-                    <span>WEBSITE PREVIEW & SCREENSHOTS</span>
-                    <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)" }}>
-                      {selectedProject.galleryImages.length} {selectedProject.galleryImages.length === 1 ? "Image" : "Images"}
-                    </span>
+                    {selectedProject.fullDetails || selectedProject.description}
                   </div>
 
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "18px",
-                      marginTop: "12px",
-                    }}
-                  >
-                    {selectedProject.galleryImages.map((imgSrc, imgIdx) => (
+                  {/* Key Highlights */}
+                  {selectedProject.highlights && selectedProject.highlights.length > 0 && (
+                    <>
+                      <div className="modal-section-heading" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span>⚡ KEY HIGHLIGHTS</span>
+                      </div>
+                      <ul className="modal-highlights-list" style={{ marginBottom: "24px" }}>
+                        {selectedProject.highlights.map((h, i) => (
+                          <li key={i} className="modal-highlight-item">
+                            <span className="highlight-bullet">⚡</span>
+                            <span>{h}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </>
+                  )}
+
+                  {/* টেক স্ট্যাক */}
+                  {selectedProject.tags && selectedProject.tags.length > 0 && (
+                    <>
+                      <div className="modal-section-heading" style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <span>🛠️ TECH STACK & TOOLS</span>
+                      </div>
+                      <div className="modal-tech-tags" style={{ marginBottom: "28px" }}>
+                        {selectedProject.tags.map((tag, i) => (
+                          <span key={i} className="tech-tag modal-tag">
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </>
+              ) : (
+                <>
+                  <h2 className="modal-project-title">{selectedProject.title}</h2>
+                  <p className="modal-project-desc">{selectedProject.fullDetails}</p>
+
+                  {/* Multiple Website Photos / Screenshots (Top to Bottom Showcase) */}
+                  {selectedProject.galleryImages && selectedProject.galleryImages.length > 0 && (
+                    <div style={{ marginTop: "24px", marginBottom: "28px" }}>
                       <div
-                        key={imgIdx}
+                        className="modal-section-heading"
                         style={{
-                          borderRadius: "12px",
-                          overflow: "hidden",
-                          border: "1px solid rgba(255, 255, 255, 0.12)",
-                          backgroundColor: "#07080a",
-                          boxShadow: "0 8px 30px rgba(0, 0, 0, 0.6)",
-                          position: "relative",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          color: "#ccff00",
                         }}
                       >
-                        <div
-                          style={{
-                            padding: "6px 12px",
-                            backgroundColor: "rgba(10, 10, 15, 0.85)",
-                            borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
-                            fontSize: "11px",
-                            color: "#888899",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "6px",
-                          }}
-                        >
-                          <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#ff5f56", display: "inline-block" }} />
-                          <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#ffbd2e", display: "inline-block" }} />
-                          <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#27c93f", display: "inline-block" }} />
-                          <span style={{ marginLeft: "8px", fontFamily: "var(--font-mono, monospace)" }}>Screenshot #{imgIdx + 1}</span>
-                        </div>
-                        <img
-                          src={imgSrc}
-                          alt={`${selectedProject.title} view ${imgIdx + 1}`}
-                          style={{
-                            width: "100%",
-                            height: "auto",
-                            display: "block",
-                            objectFit: "cover",
-                          }}
-                          loading="lazy"
-                        />
+                        <span>WEBSITE PREVIEW & SCREENSHOTS</span>
+                        <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)" }}>
+                          {selectedProject.galleryImages.length} {selectedProject.galleryImages.length === 1 ? "Image" : "Images"}
+                        </span>
                       </div>
+
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "18px",
+                          marginTop: "12px",
+                        }}
+                      >
+                        {selectedProject.galleryImages.map((imgSrc, imgIdx) => (
+                          <div
+                            key={imgIdx}
+                            style={{
+                              borderRadius: "12px",
+                              overflow: "hidden",
+                              border: "1px solid rgba(255, 255, 255, 0.12)",
+                              backgroundColor: "#07080a",
+                              boxShadow: "0 8px 30px rgba(0, 0, 0, 0.6)",
+                              position: "relative",
+                            }}
+                          >
+                            <div
+                              style={{
+                                padding: "6px 12px",
+                                backgroundColor: "rgba(10, 10, 15, 0.85)",
+                                borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+                                fontSize: "11px",
+                                color: "#888899",
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "6px",
+                              }}
+                            >
+                              <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#ff5f56", display: "inline-block" }} />
+                              <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#ffbd2e", display: "inline-block" }} />
+                              <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#27c93f", display: "inline-block" }} />
+                              <span style={{ marginLeft: "8px", fontFamily: "var(--font-mono, monospace)" }}>Screenshot #{imgIdx + 1}</span>
+                            </div>
+                            <img
+                              src={imgSrc}
+                              alt={`${selectedProject.title} view ${imgIdx + 1}`}
+                              style={{
+                                width: "100%",
+                                height: "auto",
+                                display: "block",
+                                objectFit: "cover",
+                              }}
+                              loading="lazy"
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="modal-section-heading">KEY HIGHLIGHTS & ARCHITECTURE</div>
+                  <ul className="modal-highlights-list">
+                    {selectedProject.highlights.map((h, i) => (
+                      <li key={i} className="modal-highlight-item">
+                        <span className="highlight-bullet">✓</span>
+                        <span>{h}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="modal-section-heading">TECHNOLOGIES & STACK</div>
+                  <div className="modal-tech-tags">
+                    {selectedProject.tags.map((tag, i) => (
+                      <span key={i} className="tech-tag modal-tag">
+                        {tag}
+                      </span>
                     ))}
                   </div>
-                </div>
+                </>
               )}
-
-              <div className="modal-section-heading">KEY HIGHLIGHTS & ARCHITECTURE</div>
-              <ul className="modal-highlights-list">
-                {selectedProject.highlights.map((h, i) => (
-                  <li key={i} className="modal-highlight-item">
-                    <span className="highlight-bullet">✓</span>
-                    <span>{h}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="modal-section-heading">TECHNOLOGIES & STACK</div>
-              <div className="modal-tech-tags">
-                {selectedProject.tags.map((tag, i) => (
-                  <span key={i} className="tech-tag modal-tag">
-                    {tag}
-                  </span>
-                ))}
-              </div>
 
               <div className="modal-footer-actions" style={{ flexWrap: "wrap", gap: "10px" }}>
                 {selectedProject.liveUrl && (
