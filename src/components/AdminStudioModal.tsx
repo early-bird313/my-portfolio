@@ -17,6 +17,7 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
   const [projects, setProjects] = useState<ProjectItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [filterCat, setFilterCat] = useState<string>("all");
+  const [editingProjectId, setEditingProjectId] = useState<string | null>(null);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -165,6 +166,47 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
     }
   };
 
+  const handleStartEdit = (p: ProjectItem) => {
+    setEditingProjectId(p.id);
+    setFormData({
+      title: p.title || "",
+      category: (p.category === "websites" ? "websites-app" : p.category) as any,
+      clientType: p.clientType || "",
+      description: p.description || "",
+      fullDetails: p.fullDetails || p.description || "",
+      highlights: Array.isArray(p.highlights) ? p.highlights.join("\n") : "",
+      tags: Array.isArray(p.tags) ? p.tags.join(", ") : "",
+      imageUrl: p.imageUrl || "",
+      galleryImages: Array.isArray(p.galleryImages) ? p.galleryImages : [],
+      videoUrl: p.videoUrl || "",
+      liveUrl: p.liveUrl || "",
+      githubUrl: p.githubUrl || "",
+    });
+    setFormError("");
+    setFormSuccess("");
+    setActiveTab("add");
+  };
+
+  const handleCancelEdit = () => {
+    setEditingProjectId(null);
+    setFormData({
+      title: "",
+      category: "websites-app",
+      clientType: "",
+      description: "",
+      fullDetails: "",
+      highlights: "",
+      tags: "",
+      imageUrl: "",
+      galleryImages: [],
+      videoUrl: "",
+      liveUrl: "",
+      githubUrl: "",
+    });
+    setFormError("");
+    setFormSuccess("");
+  };
+
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title.trim() || !formData.description.trim()) {
@@ -176,7 +218,9 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
     setFormError("");
     setFormSuccess("");
 
+    const isEdit = Boolean(editingProjectId);
     const payload = {
+      ...(isEdit ? { id: editingProjectId } : {}),
       title: formData.title,
       category: formData.category,
       clientType: formData.clientType || "Direct Client",
@@ -193,7 +237,7 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
 
     try {
       const res = await fetch("/api/projects", {
-        method: "POST",
+        method: isEdit ? "PUT" : "POST",
         headers: {
           "Content-Type": "application/json",
           "x-admin-key": "pabel2026",
@@ -203,7 +247,8 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
 
       const data = await res.json();
       if (res.ok && data.success) {
-        setFormSuccess("Project published successfully into live showcase!");
+        setFormSuccess(isEdit ? "Project updated successfully into live showcase!" : "Project published successfully into live showcase!");
+        setEditingProjectId(null);
         setFormData({
           title: "",
           category: "websites-app",
@@ -225,7 +270,7 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
           setActiveTab("manage");
         }, 1200);
       } else {
-        setFormError(data.error || "Failed to publish project.");
+        setFormError(data.error || (isEdit ? "Failed to update project." : "Failed to publish project."));
       }
     } catch (err: any) {
       setFormError("Server transmission error.");
@@ -372,7 +417,7 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
               cursor: "pointer",
             }}
           >
-            [+] Add Project
+            {editingProjectId ? "[✏️] Edit Project" : "[+] Add Project"}
           </button>
           <button
             type="button"
@@ -393,9 +438,50 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
           </button>
         </div>
 
-        {/* TAB 1: ADD */}
+        {/* TAB 1: ADD / EDIT */}
         {activeTab === "add" && (
           <form onSubmit={handleCreate} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+            {editingProjectId && (
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "12px 16px",
+                  backgroundColor: "rgba(204, 255, 0, 0.1)",
+                  border: `1px solid ${config.colors.accent}`,
+                  borderRadius: "8px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <span style={{ fontSize: "16px" }}>✏️</span>
+                  <div>
+                    <div style={{ fontSize: "11px", color: config.colors.accent, textTransform: "uppercase", letterSpacing: "1px", fontWeight: 700 }}>
+                      Edit Mode Active
+                    </div>
+                    <div style={{ fontSize: "13px", color: "#fff", fontWeight: 600 }}>
+                      Editing: {formData.title || "Selected Project"}
+                    </div>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  style={{
+                    padding: "6px 12px",
+                    backgroundColor: "#161822",
+                    border: "1px solid #333",
+                    color: "#ccc",
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    fontSize: "11px",
+                    fontWeight: 600,
+                  }}
+                >
+                  ✕ Cancel & New Project
+                </button>
+              </div>
+            )}
             {formSuccess && (
               <div style={{ padding: "10px 14px", backgroundColor: "rgba(34, 197, 94, 0.15)", border: "1px solid rgba(34, 197, 94, 0.4)", borderRadius: "8px", color: "#4ade80", fontSize: "13px" }}>
                 ✓ {formSuccess}
@@ -982,7 +1068,13 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
                   boxShadow: `0 0 20px rgba(204, 255, 0, 0.3)`,
                 }}
               >
-                {isSubmitting ? "Publishing to Cloudflare..." : "Publish to Portfolio Showcase"}
+                {editingProjectId
+                  ? isSubmitting
+                    ? "Updating Project in Cloudflare..."
+                    : "Save Changes / Update Project"
+                  : isSubmitting
+                  ? "Publishing to Cloudflare..."
+                  : "Publish to Portfolio Showcase"}
               </button>
             </div>
           </form>
@@ -1063,7 +1155,7 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
                       </div>
                     </div>
 
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                       {p.liveUrl && (
                         <a
                           href={p.liveUrl}
@@ -1086,6 +1178,26 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
                           🎬
                         </a>
                       )}
+                      <button
+                        type="button"
+                        onClick={() => handleStartEdit(p)}
+                        style={{
+                          padding: "6px 12px",
+                          backgroundColor: "rgba(204, 255, 0, 0.12)",
+                          border: `1px solid ${config.colors.accent}`,
+                          color: config.colors.accent,
+                          borderRadius: "6px",
+                          cursor: "pointer",
+                          fontSize: "11px",
+                          fontWeight: 700,
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "4px",
+                        }}
+                        title={`Edit ${p.title}`}
+                      >
+                        ✏️ Edit
+                      </button>
                       <button
                         type="button"
                         onClick={() => handleDelete(p.id, p.title)}

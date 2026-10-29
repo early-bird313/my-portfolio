@@ -437,6 +437,123 @@ export default {
         }
       }
 
+      // PUT update project (Protected)
+      if (request.method === 'PUT') {
+        const auth = request.headers.get('Authorization') || request.headers.get('x-admin-key');
+        if (!auth || !auth.includes('pabel2026')) {
+          return new Response(JSON.stringify({ error: 'Unauthorized clearance key' }), {
+            status: 401,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+
+        try {
+          const body: any = await request.json();
+          const {
+            id,
+            title,
+            category = 'websites-app',
+            description,
+            fullDetails,
+            clientType,
+            highlights = [],
+            tags = [],
+            imageUrl,
+            galleryImages = [],
+            videoUrl,
+            liveUrl,
+            githubUrl,
+            gradient,
+          } = body;
+
+          if (!id || !title || !description) {
+            return new Response(
+              JSON.stringify({ error: 'ID, title and description are required' }),
+              { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+
+          const categoryLabels: Record<string, string> = {
+            'websites-app': 'Websites & App',
+            websites: 'Websites & App',
+            applications: 'Websites & App',
+            automation: 'Automation',
+            video: 'Video Editing',
+            design: 'Graphic Design',
+          };
+
+          const catLabel = categoryLabels[category] || 'Showcase';
+          const cleanHighlights = Array.isArray(highlights) ? highlights : (typeof highlights === 'string' ? highlights.split('\n').filter(Boolean) : []);
+          const cleanTags = Array.isArray(tags) ? tags : (typeof tags === 'string' ? tags.split(',').map((t: string) => t.trim()).filter(Boolean) : []);
+          const cleanGallery = Array.isArray(galleryImages) ? galleryImages : [];
+
+          if (env.DB) {
+            try {
+              await ensureTable(env.DB);
+              await env.DB.prepare(`
+                UPDATE projects 
+                SET category = ?, category_label = ?, title = ?, description = ?, full_details = ?, client_type = ?, highlights = ?, tags = ?, gradient = ?, image_url = ?, gallery_images = ?, video_url = ?, live_url = ?, github_url = ?
+                WHERE id = ?
+              `).bind(
+                category,
+                catLabel,
+                title,
+                description,
+                fullDetails || description,
+                clientType || 'Direct Client Showcase',
+                JSON.stringify(cleanHighlights),
+                JSON.stringify(cleanTags),
+                gradient || 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
+                imageUrl || '/images/banner.jpg',
+                JSON.stringify(cleanGallery),
+                videoUrl || '',
+                liveUrl || '',
+                githubUrl || '',
+                id
+              ).run();
+            } catch (d1Err: any) {
+              console.error("D1 update error:", d1Err);
+            }
+          }
+
+          // Update in-memory fallback
+          const index = memoryProjects.findIndex((p) => p.id === id);
+          const updatedProject: ProjectItem = {
+            id,
+            category,
+            categoryLabel: catLabel,
+            title,
+            description,
+            fullDetails: fullDetails || description,
+            clientType: clientType || 'Direct Client Showcase',
+            highlights: cleanHighlights,
+            tags: cleanTags,
+            gradient: gradient || 'linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%)',
+            imageUrl: imageUrl || '/images/banner.jpg',
+            galleryImages: cleanGallery,
+            videoUrl: videoUrl || '',
+            liveUrl: liveUrl || '',
+            githubUrl: githubUrl || '',
+            createdAt: index !== -1 ? memoryProjects[index].createdAt : new Date().toISOString(),
+          };
+
+          if (index !== -1) {
+            memoryProjects[index] = updatedProject;
+          } else {
+            memoryProjects.unshift(updatedProject);
+          }
+
+          return new Response(JSON.stringify({ success: true, project: updatedProject }), {
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        } catch (e: any) {
+          return new Response(JSON.stringify({ error: e.message }), {
+            status: 500,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+      }
+
       // DELETE project (Protected)
       if (request.method === 'DELETE') {
         const auth = request.headers.get('Authorization') || request.headers.get('x-admin-key');
