@@ -136,17 +136,13 @@ export const renderProjectThumbnailMockup = (
       );
     }
     return (
-      <img
-        src={imageUrl}
-        alt="Project Preview"
-        style={{
-          width: "100%",
-          height: "100%",
-          objectFit: "cover",
-          borderRadius: "8px",
-          display: "block",
-        }}
-      />
+      <div className="card-mockup-inner">
+        <img
+          src={imageUrl}
+          alt="Project Preview"
+          className="card-mockup-img"
+        />
+      </div>
     );
   }
 
@@ -200,9 +196,17 @@ const normalizeCategory = (item: ProjectItem): ProjectItem => {
 
 export const getEmbedVideoInfo = (
   rawUrl?: string
-): { type: "youtube" | "vimeo" | "drive" | "direct"; embedUrl: string } | null => {
+): {
+  type: "youtube" | "vimeo" | "drive" | "direct";
+  embedUrl: string;
+  isVertical?: boolean;
+} | null => {
   if (!rawUrl) return null;
   const trimmed = rawUrl.trim();
+  const isVertical =
+    trimmed.includes("/shorts/") ||
+    trimmed.includes("tiktok.com") ||
+    trimmed.includes("/reel/");
 
   // YouTube (standard, youtu.be, shorts, embed)
   const ytMatch = trimmed.match(
@@ -212,6 +216,7 @@ export const getEmbedVideoInfo = (
     return {
       type: "youtube",
       embedUrl: `https://www.youtube-nocookie.com/embed/${ytMatch[1]}?autoplay=1&rel=0&modestbranding=1`,
+      isVertical,
     };
   }
 
@@ -221,6 +226,7 @@ export const getEmbedVideoInfo = (
     return {
       type: "vimeo",
       embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&title=0&byline=0&portrait=0`,
+      isVertical,
     };
   }
 
@@ -230,6 +236,7 @@ export const getEmbedVideoInfo = (
     return {
       type: "drive",
       embedUrl: `https://drive.google.com/file/d/${driveMatch[1]}/preview`,
+      isVertical,
     };
   }
 
@@ -238,6 +245,7 @@ export const getEmbedVideoInfo = (
     return {
       type: "direct",
       embedUrl: trimmed,
+      isVertical,
     };
   }
 
@@ -246,6 +254,7 @@ export const getEmbedVideoInfo = (
     return {
       type: "direct",
       embedUrl: trimmed,
+      isVertical,
     };
   }
 
@@ -402,6 +411,12 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
                   className="project-thumbnail"
                   style={{ background: project.gradient }}
                 >
+                  {project.imageUrl && (
+                    <div
+                      className="card-thumbnail-bg-blur"
+                      style={{ backgroundImage: `url(${project.imageUrl})` }}
+                    />
+                  )}
                   <div className="project-category-badge">
                     {project.categoryLabel}
                   </div>
@@ -425,13 +440,15 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
                 <div className="project-info-body">
                   <h3 className="project-title">{project.title}</h3>
 
-                  <div className="project-tech-tags">
-                    {project.tags.map((tag, tagIdx) => (
-                      <span className="tech-tag" key={tagIdx}>
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
+                  {project.tags && project.tags.length > 0 && (
+                    <div className="project-tech-tags">
+                      {project.tags.map((tag, tagIdx) => (
+                        <span className="tech-tag" key={tagIdx}>
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
@@ -470,7 +487,7 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
                 <div
                   className={`modal-thumbnail-banner ${
                     isPlayingVideo && embedInfo ? "is-playing-video" : ""
-                  }`}
+                  } ${embedInfo?.isVertical ? "is-vertical-video" : ""}`}
                   style={{ background: selectedProject.gradient }}
                 >
                   {selectedProject.imageUrl && (!isPlayingVideo || !embedInfo) && (
@@ -486,7 +503,11 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
                   </div>
 
                   {isPlayingVideo && embedInfo ? (
-                    <div className="modal-video-frame-container">
+                    <div
+                      className={`modal-video-frame-container ${
+                        embedInfo.isVertical ? "is-vertical-video" : ""
+                      }`}
+                    >
                       <button
                         type="button"
                         className="modal-video-close-btn"
