@@ -118,8 +118,23 @@ export const projectsData: ProjectItem[] = [
   }
 ];
 
-export const renderProjectThumbnailMockup = (projectId: string, imageUrl?: string) => {
+export const renderProjectThumbnailMockup = (
+  _projectId: string,
+  imageUrl?: string,
+  isModal: boolean = false
+) => {
   if (imageUrl) {
+    if (isModal) {
+      return (
+        <div className="modal-mockup-inner">
+          <img
+            src={imageUrl}
+            alt="Project Preview"
+            className="modal-mockup-img"
+          />
+        </div>
+      );
+    }
     return (
       <img
         src={imageUrl}
@@ -383,11 +398,19 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
               className="modal-thumbnail-banner"
               style={{ background: selectedProject.gradient }}
             >
+              {selectedProject.imageUrl && (
+                <div
+                  className="modal-banner-bg-blur"
+                  style={{
+                    backgroundImage: `url(${selectedProject.imageUrl})`,
+                  }}
+                />
+              )}
               <div className="modal-category-badge">
                 {selectedProject.categoryLabel}
               </div>
               <div className="modal-mockup-wrap">
-                {renderProjectThumbnailMockup(selectedProject.id, selectedProject.imageUrl)}
+                {renderProjectThumbnailMockup(selectedProject.id, selectedProject.imageUrl, true)}
               </div>
             </div>
 
