@@ -198,10 +198,69 @@ const normalizeCategory = (item: ProjectItem): ProjectItem => {
   return { ...item, category: cat, categoryLabel: label };
 };
 
+export const getEmbedVideoInfo = (
+  rawUrl?: string
+): { type: "youtube" | "vimeo" | "drive" | "direct"; embedUrl: string } | null => {
+  if (!rawUrl) return null;
+  const trimmed = rawUrl.trim();
+
+  // YouTube (standard, youtu.be, shorts, embed)
+  const ytMatch = trimmed.match(
+    /(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/|watch\?.+&v=))([\w-]{11})/
+  );
+  if (ytMatch && ytMatch[1]) {
+    return {
+      type: "youtube",
+      embedUrl: `https://www.youtube-nocookie.com/embed/${ytMatch[1]}?autoplay=1&rel=0&modestbranding=1`,
+    };
+  }
+
+  // Vimeo
+  const vimeoMatch = trimmed.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (vimeoMatch && vimeoMatch[1]) {
+    return {
+      type: "vimeo",
+      embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&title=0&byline=0&portrait=0`,
+    };
+  }
+
+  // Google Drive preview
+  const driveMatch = trimmed.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (driveMatch && driveMatch[1]) {
+    return {
+      type: "drive",
+      embedUrl: `https://drive.google.com/file/d/${driveMatch[1]}/preview`,
+    };
+  }
+
+  // Direct MP4 / WebM / OGG
+  if (/\.(mp4|webm|ogg)(\?.*)?$/i.test(trimmed)) {
+    return {
+      type: "direct",
+      embedUrl: trimmed,
+    };
+  }
+
+  // Fallback: if already an embeddable link
+  if (trimmed.includes("youtube.com/embed/") || trimmed.includes("player.vimeo.com/video/")) {
+    return {
+      type: "direct",
+      embedUrl: trimmed,
+    };
+  }
+
+  return null;
+};
+
 const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) => {
   const [activeFilter, setActiveFilter] = useState<CategoryFilter>("all");
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
+  const [isPlayingVideo, setIsPlayingVideo] = useState(false);
   const [items, setItems] = useState<ProjectItem[]>(projectsData);
+
+  useEffect(() => {
+    setIsPlayingVideo(false);
+  }, [selectedProject]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -349,6 +408,14 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
                   <div className="card-click-pill">
                     <span>View Details ↗</span>
                   </div>
+                  {project.videoUrl && (
+                    <div className="card-video-pill">
+                      <svg viewBox="0 0 24 24" width="11" height="11" fill="currentColor">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                      <span>Video Reel</span>
+                    </div>
+                  )}
                   <div className="dummy-mockup-container">
                     {renderProjectThumbnailMockup(project.id, project.imageUrl)}
                   </div>
@@ -393,26 +460,106 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
               ✕
             </button>
 
-            {/* Modal Thumbnail Banner */}
-            <div
-              className="modal-thumbnail-banner"
-              style={{ background: selectedProject.gradient }}
-            >
-              {selectedProject.imageUrl && (
+            {/* Modal Thumbnail / Dynamic Video Banner */}
+            {(() => {
+              const embedInfo = selectedProject.videoUrl
+                ? getEmbedVideoInfo(selectedProject.videoUrl)
+                : null;
+
+              return (
                 <div
-                  className="modal-banner-bg-blur"
-                  style={{
-                    backgroundImage: `url(${selectedProject.imageUrl})`,
-                  }}
-                />
-              )}
-              <div className="modal-category-badge">
-                {selectedProject.categoryLabel}
-              </div>
-              <div className="modal-mockup-wrap">
-                {renderProjectThumbnailMockup(selectedProject.id, selectedProject.imageUrl, true)}
-              </div>
-            </div>
+                  className={`modal-thumbnail-banner ${
+                    isPlayingVideo && embedInfo ? "is-playing-video" : ""
+                  }`}
+                  style={{ background: selectedProject.gradient }}
+                >
+                  {selectedProject.imageUrl && (!isPlayingVideo || !embedInfo) && (
+                    <div
+                      className="modal-banner-bg-blur"
+                      style={{
+                        backgroundImage: `url(${selectedProject.imageUrl})`,
+                      }}
+                    />
+                  )}
+                  <div className="modal-category-badge">
+                    {selectedProject.categoryLabel}
+                  </div>
+
+                  {isPlayingVideo && embedInfo ? (
+                    <div className="modal-video-frame-container">
+                      <button
+                        type="button"
+                        className="modal-video-close-btn"
+                        onClick={() => setIsPlayingVideo(false)}
+                        title="Close Video and return to thumbnail"
+                      >
+                        ✕ Close Video
+                      </button>
+                      {embedInfo.type === "direct" &&
+                      /\.(mp4|webm|ogg)/i.test(embedInfo.embedUrl) ? (
+                        <video
+                          src={embedInfo.embedUrl}
+                          controls
+                          autoPlay
+                          playsInline
+                          className="modal-video-player-element"
+                        />
+                      ) : (
+                        <iframe
+                          src={embedInfo.embedUrl}
+                          title={selectedProject.title}
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                          allowFullScreen
+                          className="modal-video-iframe"
+                        />
+                      )}
+                    </div>
+                  ) : (
+                    <div
+                      className={`modal-mockup-wrap ${
+                        selectedProject.videoUrl ? "clickable-video-mockup" : ""
+                      }`}
+                      onClick={() => {
+                        if (selectedProject.videoUrl) {
+                          setIsPlayingVideo(true);
+                        }
+                      }}
+                      role={selectedProject.videoUrl ? "button" : undefined}
+                      tabIndex={selectedProject.videoUrl ? 0 : undefined}
+                      title={
+                        selectedProject.videoUrl
+                          ? "Click thumbnail to play video"
+                          : undefined
+                      }
+                    >
+                      {renderProjectThumbnailMockup(
+                        selectedProject.id,
+                        selectedProject.imageUrl,
+                        true
+                      )}
+
+                      {selectedProject.videoUrl && (
+                        <div className="modal-video-play-overlay">
+                          <div className="modal-video-play-disc">
+                            <svg
+                              viewBox="0 0 24 24"
+                              width="32"
+                              height="32"
+                              fill="currentColor"
+                            >
+                              <path d="M8 5v14l11-7z" />
+                            </svg>
+                          </div>
+                          <span className="modal-video-play-text">
+                            Click Thumbnail to Play Video
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             {/* Modal Content Body */}
             {/* Modal Content Body */}
@@ -634,18 +781,29 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
                 )}
 
                 {selectedProject.videoUrl && (
-                  <a
-                    href={selectedProject.videoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsPlayingVideo(true);
+                      const dialog = document.querySelector(".project-modal-dialog");
+                      if (dialog) dialog.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
                     className="modal-secondary-btn"
-                    style={{ display: "inline-flex", alignItems: "center", gap: "8px", color: "#fbbf24", borderColor: "#fbbf2450" }}
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      color: "#000",
+                      backgroundColor: "var(--accent, #ccff00)",
+                      borderColor: "var(--accent, #ccff00)",
+                      fontWeight: 700,
+                    }}
                   >
-                    <span>Watch Video Reel</span>
                     <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
                       <path d="M8 5v14l11-7z" />
                     </svg>
-                  </a>
+                    <span>{isPlayingVideo ? "Playing Video 🎬" : "Play Video Reel ▶"}</span>
+                  </button>
                 )}
 
                 <a

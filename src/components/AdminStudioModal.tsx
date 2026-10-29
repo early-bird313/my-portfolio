@@ -668,24 +668,42 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
                 />
               </div>
               <div>
-                <label style={{ display: "block", fontSize: "11px", color: "#888899", textTransform: "uppercase", marginBottom: "6px" }}>
-                  Video Link (YouTube / Drive)
+                <label style={{ display: "block", fontSize: "11px", color: formData.category === "video" ? config.colors.accent : "#888899", textTransform: "uppercase", marginBottom: "6px", fontWeight: formData.category === "video" ? 700 : 500 }}>
+                  {formData.category === "video" ? "🎬 Video Link (YouTube / Vimeo / Drive) *" : "Video Link (YouTube / Drive)"}
                 </label>
                 <input
                   type="url"
                   value={formData.videoUrl}
                   onChange={(e) => setFormData({ ...formData, videoUrl: e.target.value })}
-                  placeholder="https://youtube.com/..."
-                  style={{ width: "100%", padding: "8px 12px", backgroundColor: "#07080a", border: "1px solid #222533", borderRadius: "8px", color: "#fff", fontSize: "12px", boxSizing: "border-box" }}
+                  placeholder="https://www.youtube.com/watch?v=... বা https://vimeo.com/..."
+                  style={{
+                    width: "100%",
+                    padding: "8px 12px",
+                    backgroundColor: "#07080a",
+                    border: formData.category === "video" ? `1px solid ${config.colors.accent}60` : "1px solid #222533",
+                    borderRadius: "8px",
+                    color: "#fff",
+                    fontSize: "12px",
+                    boxSizing: "border-box"
+                  }}
                 />
+                {formData.category === "video" && (
+                  <p style={{ margin: "4px 0 0", fontSize: "11px", color: "#94a3b8" }}>
+                    💡 সাইটে কোনো ভারী ভিডিও ফাইল আপলোড করতে হবে না। ইউটিউব বা ভিমিও লিংক বসিয়ে নিচে কভার থাম্বনেইল দিন — সাইটে থাম্বনেইলে ক্লিক করলেই সরাসরি ভিডিও চালু হবে!
+                  </p>
+                )}
               </div>
             </div>
 
             {/* Image / Thumbnail Section */}
             <div>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                <label style={{ fontSize: "11px", color: formData.category === "automation" ? config.colors.accent : "#888899", textTransform: "uppercase", fontWeight: formData.category === "automation" ? 700 : 500 }}>
-                  {formData.category === "automation" ? "Project Thumbnail / Flow Banner (থাম্বনেইল / ব্যানার) *" : "Project Thumbnail / Image"}
+                <label style={{ fontSize: "11px", color: (formData.category === "automation" || formData.category === "video") ? config.colors.accent : "#888899", textTransform: "uppercase", fontWeight: (formData.category === "automation" || formData.category === "video") ? 700 : 500 }}>
+                  {formData.category === "automation"
+                    ? "Project Thumbnail / Flow Banner (থাম্বনেইল / ব্যানার) *"
+                    : formData.category === "video"
+                    ? "Video Cover Thumbnail (ভিডিও কভার ছবি) *"
+                    : "Project Thumbnail / Image"}
                 </label>
                 <div style={{ display: "flex", gap: "6px" }}>
                   <button
