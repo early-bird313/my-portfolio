@@ -121,7 +121,8 @@ export const projectsData: ProjectItem[] = [
 export const renderProjectThumbnailMockup = (
   _projectId: string,
   imageUrl?: string,
-  isModal: boolean = false
+  isModal: boolean = false,
+  isVideo: boolean = false
 ) => {
   if (imageUrl) {
     if (isModal) {
@@ -142,6 +143,15 @@ export const renderProjectThumbnailMockup = (
           alt="Project Preview"
           className="card-mockup-img"
         />
+        {isVideo && (
+          <div className="card-center-play-badge">
+            <div className="card-play-disc">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -432,7 +442,12 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
                     </div>
                   )}
                   <div className="dummy-mockup-container">
-                    {renderProjectThumbnailMockup(project.id, project.imageUrl)}
+                    {renderProjectThumbnailMockup(
+                      project.id,
+                      project.imageUrl,
+                      false,
+                      Boolean(project.videoUrl || project.category === "video")
+                    )}
                   </div>
                 </div>
 
