@@ -34,6 +34,7 @@ export const config = {
   social: {
     github: "https://github.com/early-bird313",
     linkedin: "https://www.linkedin.com/in/minhajahmed00",
+    facebook: "https://www.facebook.com",
     email: "pabelminhajahmed@gmail.com",
   },
 

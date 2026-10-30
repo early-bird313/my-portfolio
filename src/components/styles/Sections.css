@@ -2003,6 +2003,17 @@
   box-shadow: 0 0 15px rgba(204, 255, 0, 0.15);
 }
 
+.form-select {
+  cursor: pointer;
+  background-color: #0c0d14;
+}
+
+.form-select option {
+  background-color: #12131c;
+  color: #ffffff;
+  padding: 12px 14px;
+}
+
 .form-textarea {
   min-height: 120px;
   resize: vertical;

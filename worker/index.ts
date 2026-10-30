@@ -249,6 +249,79 @@ export default {
     }
 
     // ─────────────────────────────────────────────────────────────
+    // 2.5 API: Contact Message Dispatch & Archival
+    // ─────────────────────────────────────────────────────────────
+    if (url.pathname === '/api/contact' && request.method === 'POST') {
+      try {
+        const body: any = await request.json();
+        const name = (body.name || '').trim();
+        const email = (body.email || '').trim();
+        const service = (body.service || 'General Inquiry').trim();
+        const message = (body.message || '').trim();
+
+        if (!name || !email || !message) {
+          return new Response(JSON.stringify({ error: 'Name, email, and message are required' }), {
+            status: 400,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          });
+        }
+
+        // Archive to Cloudflare D1
+        if (env.DB) {
+          try {
+            await env.DB.prepare(`
+              CREATE TABLE IF NOT EXISTS contact_messages (
+                id TEXT PRIMARY KEY,
+                name TEXT NOT NULL,
+                email TEXT NOT NULL,
+                service TEXT,
+                message TEXT NOT NULL,
+                created_at TEXT NOT NULL
+              )
+            `).run();
+
+            const msgId = 'msg-' + Date.now() + '-' + Math.random().toString(36).substring(2, 7);
+            await env.DB.prepare(
+              "INSERT INTO contact_messages (id, name, email, service, message, created_at) VALUES (?, ?, ?, ?, ?, ?)"
+            ).bind(msgId, name, email, service, message, new Date().toISOString()).run();
+          } catch (d1Err) {
+            console.error("D1 contact save error:", d1Err);
+          }
+        }
+
+        // Forward to pabelminhajahmed@gmail.com via FormSubmit.co
+        try {
+          await fetch("https://formsubmit.co/ajax/pabelminhajahmed@gmail.com", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Accept": "application/json",
+            },
+            body: JSON.stringify({
+              name,
+              email,
+              service,
+              message,
+              _subject: `Portfolio Inquiry from ${name} (${service})`,
+              _replyto: email,
+            }),
+          });
+        } catch (emailErr) {
+          console.error("Email dispatch error:", emailErr);
+        }
+
+        return new Response(JSON.stringify({ success: true, message: 'Message sent successfully' }), {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      } catch (err: any) {
+        return new Response(JSON.stringify({ error: err.message }), {
+          status: 500,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        });
+      }
+    }
+
+    // ─────────────────────────────────────────────────────────────
     // 3. API: Projects (GET, POST, DELETE)
     // ─────────────────────────────────────────────────────────────
     if (url.pathname === '/api/projects') {

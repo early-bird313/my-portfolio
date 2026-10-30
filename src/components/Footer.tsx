@@ -1,4 +1,5 @@
 import "./styles/Sections.css";
+import { config } from "../config";
 
 const Footer = () => {
   return (
@@ -10,9 +11,9 @@ const Footer = () => {
 
         <div className="footer-links-group" style={{ display: "flex", alignItems: "center", gap: "1.5rem" }}>
           <div className="footer-socials" style={{ display: "flex", gap: "1.2rem" }}>
-            <a href="https://github.com/early-bird313" target="_blank" rel="noopener noreferrer" style={{ color: "#a1a1aa", fontSize: "0.85rem", transition: "color 0.2s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "#ccff00")} onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}>GitHub</a>
-            <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style={{ color: "#a1a1aa", fontSize: "0.85rem", transition: "color 0.2s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "#ccff00")} onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}>LinkedIn</a>
-            <a href="https://behance.net" target="_blank" rel="noopener noreferrer" style={{ color: "#a1a1aa", fontSize: "0.85rem", transition: "color 0.2s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "#ccff00")} onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}>Behance</a>
+            <a href={config.social.github} target="_blank" rel="noopener noreferrer" style={{ color: "#a1a1aa", fontSize: "0.85rem", transition: "color 0.2s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "#ccff00")} onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}>GitHub</a>
+            <a href={config.social.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: "#a1a1aa", fontSize: "0.85rem", transition: "color 0.2s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "#ccff00")} onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}>LinkedIn</a>
+            <a href={config.social.facebook || "https://facebook.com"} target="_blank" rel="noopener noreferrer" style={{ color: "#a1a1aa", fontSize: "0.85rem", transition: "color 0.2s" }} onMouseEnter={(e) => (e.currentTarget.style.color = "#ccff00")} onMouseLeave={(e) => (e.currentTarget.style.color = "#a1a1aa")}>Facebook</a>
           </div>
 
           <a href="#hero" className="footer-back-top">
