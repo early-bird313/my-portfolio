@@ -31,6 +31,7 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
     imageUrl: "",
     galleryImages: [] as string[],
     videoUrl: "",
+    videoAspectRatio: "vertical" as "vertical" | "horizontal",
     liveUrl: "",
     githubUrl: "",
   });
@@ -179,6 +180,7 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
       imageUrl: p.imageUrl || "",
       galleryImages: Array.isArray(p.galleryImages) ? p.galleryImages : [],
       videoUrl: p.videoUrl || "",
+      videoAspectRatio: (p.videoAspectRatio || (p.category === "video" ? "vertical" : "horizontal")) as any,
       liveUrl: p.liveUrl || "",
       githubUrl: p.githubUrl || "",
     });
@@ -200,6 +202,7 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
       imageUrl: "",
       galleryImages: [],
       videoUrl: "",
+      videoAspectRatio: "vertical",
       liveUrl: "",
       githubUrl: "",
     });
@@ -231,6 +234,7 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
       imageUrl: formData.imageUrl || "/images/banner.jpg",
       galleryImages: formData.category === "automation" ? [] : formData.galleryImages,
       videoUrl: formData.videoUrl || "",
+      videoAspectRatio: formData.videoAspectRatio,
       liveUrl: formData.liveUrl || "",
       githubUrl: formData.githubUrl || "",
     };
@@ -260,6 +264,7 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
           imageUrl: "",
           galleryImages: [],
           videoUrl: "",
+          videoAspectRatio: "vertical",
           liveUrl: "",
           githubUrl: "",
         });
@@ -712,9 +717,54 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
                     boxSizing: "border-box"
                   }}
                 />
+                {formData.videoUrl && (
+                  <div style={{ marginTop: "8px" }}>
+                    <label style={{ display: "block", fontSize: "11px", color: "#888899", marginBottom: "5px" }}>
+                      Video Format / Aspect Ratio (ভিডিওর অনুপাত):
+                    </label>
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, videoAspectRatio: "vertical" })}
+                        style={{
+                          flex: 1,
+                          padding: "6px 10px",
+                          borderRadius: "6px",
+                          fontSize: "11px",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          border: formData.videoAspectRatio === "vertical" ? `1px solid ${config.colors.accent}` : "1px solid #222533",
+                          backgroundColor: formData.videoAspectRatio === "vertical" ? `${config.colors.accent}20` : "#07080a",
+                          color: formData.videoAspectRatio === "vertical" ? config.colors.accent : "#94a3b8",
+                          transition: "all 0.2s ease",
+                        }}
+                      >
+                        📱 Vertical Reel (9:16)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setFormData({ ...formData, videoAspectRatio: "horizontal" })}
+                        style={{
+                          flex: 1,
+                          padding: "6px 10px",
+                          borderRadius: "6px",
+                          fontSize: "11px",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          border: formData.videoAspectRatio === "horizontal" ? `1px solid ${config.colors.accent}` : "1px solid #222533",
+                          backgroundColor: formData.videoAspectRatio === "horizontal" ? `${config.colors.accent}20` : "#07080a",
+                          color: formData.videoAspectRatio === "horizontal" ? config.colors.accent : "#94a3b8",
+                          transition: "all 0.2s ease",
+                        }}
+                      >
+                        🖥️ Horizontal (16:9)
+                      </button>
+                    </div>
+                  </div>
+                )}
                 {formData.category === "video" && (
-                  <p style={{ margin: "4px 0 0", fontSize: "11px", color: "#94a3b8" }}>
-                    💡 সাইটে কোনো ভারী ভিডিও ফাইল আপলোড করতে হবে না। ইউটিউব বা ভিমিও লিংক বসিয়ে নিচে কভার থাম্বনেইল দিন — সাইটে থাম্বনেইলে ক্লিক করলেই সরাসরি ভিডিও চালু হবে!
+                  <p style={{ margin: "6px 0 0", fontSize: "11px", color: "#94a3b8" }}>
+                    💡 সাইটে কোনো ভারী ভিডিও ফাইল আপলোড করতে হবে না। ইউটিউব, ড্রাইভ বা ভিমিও লিংক বসিয়ে নিচে কভার থাম্বনেইল দিন — সাইটে থাম্বনেইলে ক্লিক করলেই সরাসরি ভিডিও চালু হবে!
                   </p>
                 )}
               </div>

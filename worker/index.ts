@@ -19,6 +19,7 @@ export interface ProjectItem {
   imageUrl?: string;
   galleryImages?: string[];
   videoUrl?: string;
+  videoAspectRatio?: 'vertical' | 'horizontal';
   liveUrl?: string;
   githubUrl?: string;
   createdAt?: string;
@@ -153,6 +154,10 @@ async function ensureTable(db: any) {
 
     try {
       await db.prepare("ALTER TABLE projects ADD COLUMN gallery_images TEXT").run();
+    } catch (_) {}
+
+    try {
+      await db.prepare("ALTER TABLE projects ADD COLUMN video_aspect_ratio TEXT").run();
     } catch (_) {}
 
     try {
@@ -381,6 +386,7 @@ export default {
                 imageUrl: row.image_url,
                 galleryImages: JSON.parse(row.gallery_images || '[]'),
                 videoUrl: row.video_url,
+                videoAspectRatio: row.video_aspect_ratio || (cat === 'video' ? 'vertical' : 'horizontal'),
                 liveUrl: row.live_url,
                 githubUrl: row.github_url,
                 createdAt: row.created_at,
@@ -428,6 +434,7 @@ export default {
             imageUrl,
             galleryImages = [],
             videoUrl,
+            videoAspectRatio,
             liveUrl,
             githubUrl,
             gradient,
@@ -463,6 +470,7 @@ export default {
             imageUrl: imageUrl || '/images/banner.jpg',
             galleryImages: Array.isArray(galleryImages) ? galleryImages : [],
             videoUrl: videoUrl || '',
+            videoAspectRatio: videoAspectRatio || (category === 'video' ? 'vertical' : 'horizontal'),
             liveUrl: liveUrl || '',
             githubUrl: githubUrl || '',
             createdAt: new Date().toISOString(),
@@ -472,8 +480,8 @@ export default {
             try {
               await ensureTable(env.DB);
               await env.DB.prepare(`
-                INSERT INTO projects (id, category, category_label, title, description, full_details, client_type, highlights, tags, gradient, image_url, gallery_images, video_url, live_url, github_url, created_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO projects (id, category, category_label, title, description, full_details, client_type, highlights, tags, gradient, image_url, gallery_images, video_url, video_aspect_ratio, live_url, github_url, created_at)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
               `).bind(
                 newProject.id,
                 newProject.category,
@@ -488,6 +496,7 @@ export default {
                 newProject.imageUrl,
                 JSON.stringify(newProject.galleryImages),
                 newProject.videoUrl,
+                newProject.videoAspectRatio,
                 newProject.liveUrl,
                 newProject.githubUrl,
                 newProject.createdAt
@@ -534,6 +543,7 @@ export default {
             imageUrl,
             galleryImages = [],
             videoUrl,
+            videoAspectRatio,
             liveUrl,
             githubUrl,
             gradient,
@@ -559,13 +569,14 @@ export default {
           const cleanHighlights = Array.isArray(highlights) ? highlights : (typeof highlights === 'string' ? highlights.split('\n').filter(Boolean) : []);
           const cleanTags = Array.isArray(tags) ? tags : (typeof tags === 'string' ? tags.split(',').map((t: string) => t.trim()).filter(Boolean) : []);
           const cleanGallery = Array.isArray(galleryImages) ? galleryImages : [];
+          const cleanAspectRatio = videoAspectRatio || (category === 'video' ? 'vertical' : 'horizontal');
 
           if (env.DB) {
             try {
               await ensureTable(env.DB);
               await env.DB.prepare(`
                 UPDATE projects 
-                SET category = ?, category_label = ?, title = ?, description = ?, full_details = ?, client_type = ?, highlights = ?, tags = ?, gradient = ?, image_url = ?, gallery_images = ?, video_url = ?, live_url = ?, github_url = ?
+                SET category = ?, category_label = ?, title = ?, description = ?, full_details = ?, client_type = ?, highlights = ?, tags = ?, gradient = ?, image_url = ?, gallery_images = ?, video_url = ?, video_aspect_ratio = ?, live_url = ?, github_url = ?
                 WHERE id = ?
               `).bind(
                 category,
@@ -580,6 +591,7 @@ export default {
                 imageUrl || '/images/banner.jpg',
                 JSON.stringify(cleanGallery),
                 videoUrl || '',
+                cleanAspectRatio,
                 liveUrl || '',
                 githubUrl || '',
                 id

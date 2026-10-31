@@ -15,6 +15,7 @@ export interface ProjectItem {
   imageUrl?: string;
   galleryImages?: string[];
   videoUrl?: string;
+  videoAspectRatio?: "vertical" | "horizontal";
   liveUrl?: string;
   githubUrl?: string;
 }
@@ -205,18 +206,38 @@ const normalizeCategory = (item: ProjectItem): ProjectItem => {
 };
 
 export const getEmbedVideoInfo = (
-  rawUrl?: string
+  rawUrl?: string,
+  projectCategory?: string,
+  aspectRatioOption?: "vertical" | "horizontal"
 ): {
   type: "youtube" | "vimeo" | "drive" | "direct";
   embedUrl: string;
-  isVertical?: boolean;
+  isVertical: boolean;
+  originalUrl: string;
 } | null => {
   if (!rawUrl) return null;
   const trimmed = rawUrl.trim();
-  const isVertical =
-    trimmed.includes("/shorts/") ||
-    trimmed.includes("tiktok.com") ||
-    trimmed.includes("/reel/");
+
+  let isVertical = false;
+  if (aspectRatioOption === "vertical") {
+    isVertical = true;
+  } else if (aspectRatioOption === "horizontal") {
+    isVertical = false;
+  } else {
+    // Smart auto-detection:
+    // If URL contains shorts, tiktok, reel, or #vertical -> vertical
+    // If project category is "video" -> default to vertical
+    if (
+      trimmed.includes("/shorts/") ||
+      trimmed.includes("tiktok.com") ||
+      trimmed.includes("/reel/") ||
+      trimmed.includes("#vertical")
+    ) {
+      isVertical = true;
+    } else if (projectCategory === "video") {
+      isVertical = true;
+    }
+  }
 
   // YouTube (standard, youtu.be, shorts, embed)
   const ytMatch = trimmed.match(
@@ -227,6 +248,7 @@ export const getEmbedVideoInfo = (
       type: "youtube",
       embedUrl: `https://www.youtube-nocookie.com/embed/${ytMatch[1]}?autoplay=1&rel=0&modestbranding=1`,
       isVertical,
+      originalUrl: trimmed,
     };
   }
 
@@ -237,6 +259,7 @@ export const getEmbedVideoInfo = (
       type: "vimeo",
       embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1&title=0&byline=0&portrait=0`,
       isVertical,
+      originalUrl: trimmed,
     };
   }
 
@@ -247,6 +270,7 @@ export const getEmbedVideoInfo = (
       type: "drive",
       embedUrl: `https://drive.google.com/file/d/${driveMatch[1]}/preview`,
       isVertical,
+      originalUrl: trimmed,
     };
   }
 
@@ -256,6 +280,7 @@ export const getEmbedVideoInfo = (
       type: "direct",
       embedUrl: trimmed,
       isVertical,
+      originalUrl: trimmed,
     };
   }
 
@@ -265,31 +290,43 @@ export const getEmbedVideoInfo = (
       type: "direct",
       embedUrl: trimmed,
       isVertical,
+      originalUrl: trimmed,
     };
   }
 
-  return null;
+  return {
+    type: "direct",
+    embedUrl: trimmed,
+    isVertical,
+    originalUrl: trimmed,
+  };
 };
 
 const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) => {
   const [activeFilter, setActiveFilter] = useState<CategoryFilter>("all");
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
   const [isPlayingVideo, setIsPlayingVideo] = useState(false);
+  const [isFullscreenVideo, setIsFullscreenVideo] = useState(false);
   const [items, setItems] = useState<ProjectItem[]>(projectsData);
 
   useEffect(() => {
     setIsPlayingVideo(false);
+    setIsFullscreenVideo(false);
   }, [selectedProject]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setSelectedProject(null);
+        if (isFullscreenVideo) {
+          setIsFullscreenVideo(false);
+        } else {
+          setSelectedProject(null);
+        }
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [isFullscreenVideo]);
 
   useEffect(() => {
     fetch("/api/projects")
@@ -502,14 +539,18 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
             {/* Modal Thumbnail / Dynamic Video Banner */}
             {(() => {
               const embedInfo = selectedProject.videoUrl
-                ? getEmbedVideoInfo(selectedProject.videoUrl)
+                ? getEmbedVideoInfo(
+                    selectedProject.videoUrl,
+                    selectedProject.category,
+                    selectedProject.videoAspectRatio
+                  )
                 : null;
 
               return (
                 <div
                   className={`modal-thumbnail-banner ${
                     isPlayingVideo && embedInfo ? "is-playing-video" : ""
-                  } ${embedInfo?.isVertical ? "is-vertical-video" : ""}`}
+                  } ${embedInfo?.isVertical ? "is-vertical-video" : "is-horizontal-video"}`}
                   style={{ background: selectedProject.gradient }}
                 >
                   {selectedProject.imageUrl && (!isPlayingVideo || !embedInfo) && (
@@ -520,24 +561,47 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
                       }}
                     />
                   )}
-                  <div className="modal-category-badge">
-                    {selectedProject.categoryLabel}
-                  </div>
+
+                  {/* Hide category badge when playing video */}
+                  {!isPlayingVideo && (
+                    <div className="modal-category-badge">
+                      {selectedProject.categoryLabel}
+                    </div>
+                  )}
 
                   {isPlayingVideo && embedInfo ? (
                     <div
                       className={`modal-video-frame-container ${
-                        embedInfo.isVertical ? "is-vertical-video" : ""
+                        embedInfo.isVertical ? "is-vertical-video" : "is-horizontal-video"
                       }`}
                     >
-                      <button
-                        type="button"
-                        className="modal-video-close-btn"
-                        onClick={() => setIsPlayingVideo(false)}
-                        title="Close Video and return to thumbnail"
-                      >
-                        ✕ Close Video
-                      </button>
+                      <div className="modal-video-action-bar">
+                        <span className="modal-video-status-tag">
+                          {embedInfo.isVertical ? "📱 Reel View" : "🎬 Video"}
+                        </span>
+                        <div className="modal-video-btn-group">
+                          <button
+                            type="button"
+                            className="modal-video-action-btn"
+                            onClick={() => setIsFullscreenVideo(true)}
+                            title="Expand to Fullscreen Theater Lightbox"
+                          >
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="currentColor">
+                              <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                            </svg>
+                            <span>Fullscreen</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="modal-video-action-btn modal-video-close-btn"
+                            onClick={() => setIsPlayingVideo(false)}
+                            title="Close Video and return to thumbnail"
+                          >
+                            ✕ Close
+                          </button>
+                        </div>
+                      </div>
+
                       {embedInfo.type === "direct" &&
                       /\.(mp4|webm|ogg)/i.test(embedInfo.embedUrl) ? (
                         <video
@@ -578,7 +642,8 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
                       {renderProjectThumbnailMockup(
                         selectedProject.id,
                         selectedProject.imageUrl,
-                        true
+                        true,
+                        Boolean(selectedProject.videoUrl || selectedProject.category === "video")
                       )}
 
                       {selectedProject.videoUrl && (
@@ -845,29 +910,48 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
                 )}
 
                 {selectedProject.videoUrl && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsPlayingVideo(true);
-                      const dialog = document.querySelector(".project-modal-dialog");
-                      if (dialog) dialog.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
-                    className="modal-secondary-btn"
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      color: "#000",
-                      backgroundColor: "var(--accent, #ccff00)",
-                      borderColor: "var(--accent, #ccff00)",
-                      fontWeight: 700,
-                    }}
-                  >
-                    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                      <path d="M8 5v14l11-7z" />
-                    </svg>
-                    <span>{isPlayingVideo ? "Playing Video 🎬" : "Play Video Reel ▶"}</span>
-                  </button>
+                  <div style={{ display: "inline-flex", gap: "8px", flexWrap: "wrap" }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsPlayingVideo(true);
+                        const dialog = document.querySelector(".project-modal-dialog");
+                        if (dialog) dialog.scrollTo({ top: 0, behavior: "smooth" });
+                      }}
+                      className="modal-secondary-btn"
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        color: "#000",
+                        backgroundColor: "var(--accent, #ccff00)",
+                        borderColor: "var(--accent, #ccff00)",
+                        fontWeight: 700,
+                      }}
+                    >
+                      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                      <span>{isPlayingVideo ? "Playing in Banner 🎬" : "Play Video ▶"}</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setIsFullscreenVideo(true)}
+                      className="modal-secondary-btn"
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "8px",
+                      }}
+                      title="Open Fullscreen Theater Lightbox"
+                    >
+                      <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+                        <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                      </svg>
+                      <span>Fullscreen Lightbox ⛶</span>
+                    </button>
+                  </div>
                 )}
 
                 <a
@@ -888,6 +972,87 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
               </div>
             </div>
           </div>
+
+          {/* Dedicated Fullscreen Theater Lightbox for Mobile & Desktop */}
+          {isFullscreenVideo && selectedProject?.videoUrl && (() => {
+            const fullEmbed = getEmbedVideoInfo(
+              selectedProject.videoUrl,
+              selectedProject.category,
+              selectedProject.videoAspectRatio
+            );
+            if (!fullEmbed) return null;
+
+            return (
+              <div
+                className="video-lightbox-overlay"
+                onClick={() => setIsFullscreenVideo(false)}
+                role="dialog"
+                aria-modal="true"
+              >
+                <div
+                  className={`video-lightbox-content ${
+                    fullEmbed.isVertical ? "is-vertical-content" : "is-horizontal-content"
+                  }`}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="video-lightbox-header">
+                    <div className="video-lightbox-title-wrap">
+                      <span className="video-lightbox-pill">
+                        {fullEmbed.isVertical ? "📱 Reel (9:16)" : "🎬 Video (16:9)"}
+                      </span>
+                      <h4 className="video-lightbox-title">{selectedProject.title}</h4>
+                    </div>
+                    <div className="video-lightbox-actions">
+                      {fullEmbed.originalUrl && (
+                        <a
+                          href={fullEmbed.originalUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="video-lightbox-ext-link"
+                          title="Open original video link"
+                        >
+                          Open Link ↗
+                        </a>
+                      )}
+                      <button
+                        type="button"
+                        className="video-lightbox-close-btn"
+                        onClick={() => setIsFullscreenVideo(false)}
+                        aria-label="Close Lightbox"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+
+                  <div
+                    className={`video-lightbox-player-wrap ${
+                      fullEmbed.isVertical ? "is-vertical" : "is-horizontal"
+                    }`}
+                  >
+                    {fullEmbed.type === "direct" &&
+                    /\.(mp4|webm|ogg)/i.test(fullEmbed.embedUrl) ? (
+                      <video
+                        src={fullEmbed.embedUrl}
+                        controls
+                        autoPlay
+                        playsInline
+                        className="lightbox-video-element"
+                      />
+                    ) : (
+                      <iframe
+                        src={fullEmbed.embedUrl}
+                        title={selectedProject.title}
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        allowFullScreen
+                        className="lightbox-video-iframe"
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       )}
     </section>
