@@ -2562,6 +2562,10 @@
   }
   .modal-video-action-bar {
     padding: 8px 10px;
+    background: rgba(10, 11, 16, 0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   }
   .modal-video-action-btn {
     padding: 4px 8px;
@@ -2570,6 +2574,20 @@
   .modal-video-status-tag {
     font-size: 0.65rem;
     padding: 2px 7px;
+  }
+  .video-lightbox-overlay {
+    padding: 0.5rem;
+  }
+  .video-lightbox-content {
+    max-height: 98vh;
+    border-radius: 12px;
+  }
+  .video-lightbox-header {
+    padding: 0.6rem 0.8rem;
+  }
+  .video-lightbox-player-wrap.is-vertical {
+    height: 78vh;
+    max-height: calc(96vh - 50px);
   }
   .modal-content-body {
     padding: 1.4rem 1.2rem;

@@ -539,14 +539,17 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
             className="project-modal-dialog"
             onClick={(e) => e.stopPropagation()}
           >
-            <button
-              type="button"
-              className="project-modal-close"
-              onClick={() => setSelectedProject(null)}
-              aria-label="Close project modal"
-            >
-              ✕
-            </button>
+            {/* Modal Close Button: only show when not playing video inside banner to avoid duplicate close buttons */}
+            {!isPlayingVideo && (
+              <button
+                type="button"
+                className="project-modal-close"
+                onClick={() => setSelectedProject(null)}
+                aria-label="Close project modal"
+              >
+                ✕
+              </button>
+            )}
 
             {/* Modal Thumbnail / Dynamic Video Banner */}
             {(() => {
@@ -640,7 +643,11 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
                       }`}
                       onClick={() => {
                         if (selectedProject.videoUrl) {
-                          setIsPlayingVideo(true);
+                          if (window.innerWidth <= 768) {
+                            setIsFullscreenVideo(true);
+                          } else {
+                            setIsPlayingVideo(true);
+                          }
                         }
                       }}
                       role={selectedProject.videoUrl ? "button" : undefined}
@@ -923,46 +930,91 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
 
                 {selectedProject.videoUrl && (
                   <div style={{ display: "inline-flex", gap: "8px", flexWrap: "wrap" }}>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsPlayingVideo(true);
-                        const dialog = document.querySelector(".project-modal-dialog");
-                        if (dialog) dialog.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                      className="modal-secondary-btn"
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "8px",
-                        color: "#000",
-                        backgroundColor: "var(--accent, #ccff00)",
-                        borderColor: "var(--accent, #ccff00)",
-                        fontWeight: 700,
-                      }}
-                    >
-                      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
-                        <path d="M8 5v14l11-7z" />
-                      </svg>
-                      <span>{isPlayingVideo ? "Playing in Banner 🎬" : "Play Video ▶"}</span>
-                    </button>
+                    {isPlayingVideo ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => setIsPlayingVideo(false)}
+                          className="modal-secondary-btn"
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            color: "#fca5a5",
+                            borderColor: "rgba(239, 68, 68, 0.4)",
+                            backgroundColor: "rgba(239, 68, 68, 0.12)",
+                          }}
+                        >
+                          ✕ Stop Video
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setIsFullscreenVideo(true)}
+                          className="modal-secondary-btn"
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            color: "#000",
+                            backgroundColor: "var(--accent, #ccff00)",
+                            borderColor: "var(--accent, #ccff00)",
+                            fontWeight: 700,
+                          }}
+                        >
+                          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+                            <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                          </svg>
+                          <span>Fullscreen Theater ⛶</span>
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (window.innerWidth <= 768) {
+                              setIsFullscreenVideo(true);
+                            } else {
+                              setIsPlayingVideo(true);
+                              const dialog = document.querySelector(".project-modal-dialog");
+                              if (dialog) dialog.scrollTo({ top: 0, behavior: "smooth" });
+                            }
+                          }}
+                          className="modal-secondary-btn"
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            color: "#000",
+                            backgroundColor: "var(--accent, #ccff00)",
+                            borderColor: "var(--accent, #ccff00)",
+                            fontWeight: 700,
+                          }}
+                        >
+                          <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                            <path d="M8 5v14l11-7z" />
+                          </svg>
+                          <span>Play Video ▶</span>
+                        </button>
 
-                    <button
-                      type="button"
-                      onClick={() => setIsFullscreenVideo(true)}
-                      className="modal-secondary-btn"
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        gap: "8px",
-                      }}
-                      title="Open Fullscreen Theater Lightbox"
-                    >
-                      <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
-                        <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
-                      </svg>
-                      <span>Fullscreen Lightbox ⛶</span>
-                    </button>
+                        <button
+                          type="button"
+                          onClick={() => setIsFullscreenVideo(true)}
+                          className="modal-secondary-btn"
+                          style={{
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "8px",
+                          }}
+                          title="Open Fullscreen Theater Lightbox"
+                        >
+                          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+                            <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                          </svg>
+                          <span>Theater ⛶</span>
+                        </button>
+                      </>
+                    )}
                   </div>
                 )}
 
