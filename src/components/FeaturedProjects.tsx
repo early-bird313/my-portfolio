@@ -490,6 +490,18 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
                       <span>Video Reel</span>
                     </div>
                   )}
+                  {project.category === "design" && (
+                    <div
+                      className="card-video-pill"
+                      style={{
+                        background: "rgba(204, 255, 0, 0.15)",
+                        borderColor: "rgba(204, 255, 0, 0.35)",
+                        color: "var(--accent, #ccff00)",
+                      }}
+                    >
+                      <span>🎨 Design</span>
+                    </div>
+                  )}
                   <div className="dummy-mockup-container">
                     {renderProjectThumbnailMockup(
                       project.id,
@@ -504,21 +516,37 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
                 <div className="project-info-body">
                   <div className="project-title-desc-wrap">
                     <h3 className="project-title">{project.title}</h3>
-                    {project.description && (
+                    {project.category !== "design" && project.description && (
                       <p className="project-card-desc">
                         {project.description}
                       </p>
                     )}
                   </div>
 
-                  {project.tags && project.tags.length > 0 && (
+                  {project.category === "design" ? (
                     <div className="project-tech-tags">
-                      {project.tags.map((tag, tagIdx) => (
-                        <span className="tech-tag" key={tagIdx}>
-                          {tag}
-                        </span>
-                      ))}
+                      <span
+                        className="tech-tag"
+                        style={{
+                          background: "rgba(204, 255, 0, 0.12)",
+                          color: "var(--accent, #ccff00)",
+                          border: "1px solid rgba(204, 255, 0, 0.3)",
+                          fontWeight: 700,
+                        }}
+                      >
+                        Featured Work
+                      </span>
                     </div>
+                  ) : (
+                    project.tags && project.tags.length > 0 && (
+                      <div className="project-tech-tags">
+                        {project.tags.map((tag, tagIdx) => (
+                          <span className="tech-tag" key={tagIdx}>
+                            {tag}
+                          </span>
+                        ))}
+                      </div>
+                    )
                   )}
                 </div>
               </div>
@@ -689,11 +717,10 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
             })()}
 
             {/* Modal Content Body */}
-            {/* Modal Content Body */}
             <div className="modal-content-body">
               <div className="modal-meta-row">
                 <span className="modal-client-tag">
-                  ✦ Client / Industry: <strong>{selectedProject.clientType || "Direct Showcase"}</strong>
+                  ✦ {selectedProject.category === "design" ? "Category: Graphic Design" : `Client / Industry: ${selectedProject.clientType || "Direct Showcase"}`}
                 </span>
                 {selectedProject.category === "automation" && (
                   <span
@@ -708,9 +735,141 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
                     ⚡ AI & WORKFLOW AUTOMATION
                   </span>
                 )}
+                {selectedProject.category === "design" && (
+                  <span
+                    style={{
+                      fontSize: "11px",
+                      color: "#ccff00",
+                      fontFamily: "var(--font-mono, monospace)",
+                      fontWeight: 700,
+                      letterSpacing: "1px",
+                    }}
+                  >
+                    ✦ FEATURED WORK
+                  </span>
+                )}
               </div>
 
-              {selectedProject.category === "automation" ? (
+              {selectedProject.category === "design" ? (
+                <>
+                  <h2 className="modal-project-title" style={{ marginBottom: "12px" }}>
+                    {selectedProject.title}
+                  </h2>
+
+                  <div style={{ marginBottom: "22px" }}>
+                    <span
+                      className="tech-tag modal-tag"
+                      style={{
+                        background: "rgba(204, 255, 0, 0.15)",
+                        color: "var(--accent, #ccff00)",
+                        border: "1px solid rgba(204, 255, 0, 0.35)",
+                        fontWeight: 700,
+                        padding: "5px 14px",
+                        borderRadius: "999px",
+                        fontSize: "12px",
+                      }}
+                    >
+                      ✦ Featured Work
+                    </span>
+                  </div>
+
+                  {/* Individual Single Designs Showcase ("থাম্বনেইলের পরে সিঙ্গেল যে ডিজাইনগুলো আছে") */}
+                  {selectedProject.galleryImages && selectedProject.galleryImages.length > 0 && (
+                    <div style={{ marginTop: "16px", marginBottom: "28px" }}>
+                      <div
+                        className="modal-section-heading"
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          color: "#ccff00",
+                          marginBottom: "16px",
+                        }}
+                      >
+                        <span>🎨 INDIVIDUAL SINGLE DESIGNS ({selectedProject.galleryImages.length})</span>
+                        <span style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)", textTransform: "none" }}>
+                          Full Resolution Showcase
+                        </span>
+                      </div>
+
+                      <div style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
+                        {selectedProject.galleryImages.map((imgSrc, imgIdx) => (
+                          <div
+                            key={imgIdx}
+                            style={{
+                              borderRadius: "14px",
+                              overflow: "hidden",
+                              border: "1px solid rgba(255, 255, 255, 0.12)",
+                              backgroundColor: "#07080a",
+                              boxShadow: "0 10px 35px rgba(0, 0, 0, 0.8)",
+                            }}
+                          >
+                            <div
+                              style={{
+                                padding: "8px 14px",
+                                backgroundColor: "rgba(10, 10, 16, 0.9)",
+                                borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
+                                fontSize: "12px",
+                                color: "#94a3b8",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <span style={{ fontFamily: "var(--font-mono, monospace)", color: "#ccff00", fontWeight: 700 }}>
+                                Single Design #{imgIdx + 1}
+                              </span>
+                              <a
+                                href={imgSrc}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{
+                                  fontSize: "11px",
+                                  color: "#94a3b8",
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  gap: "4px",
+                                  textDecoration: "none",
+                                  padding: "2px 8px",
+                                  borderRadius: "4px",
+                                  background: "rgba(255,255,255,0.06)",
+                                }}
+                                title="Open full resolution in new tab"
+                              >
+                                Full View ↗
+                              </a>
+                            </div>
+                            <div
+                              style={{
+                                padding: "16px",
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                background: "radial-gradient(circle at center, rgba(20, 22, 32, 0.8) 0%, #050508 100%)",
+                              }}
+                            >
+                              <img
+                                src={imgSrc}
+                                alt={`${selectedProject.title} single design ${imgIdx + 1}`}
+                                style={{
+                                  maxWidth: "100%",
+                                  maxHeight: "850px",
+                                  height: "auto",
+                                  objectFit: "contain",
+                                  borderRadius: "8px",
+                                  display: "block",
+                                  boxShadow: "0 8px 30px rgba(0, 0, 0, 0.7)",
+                                }}
+                                loading="lazy"
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </>
+              ) : selectedProject.category === "automation" ? (
                 <>
                   {/* প্রজেক্টের নাম */}
                   <h2 className="modal-project-title" style={{ marginBottom: "12px" }}>
