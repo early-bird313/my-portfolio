@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import "./styles/Sections.css";
 
 export interface ProjectItem {
@@ -315,6 +316,17 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
   }, [selectedProject]);
 
   useEffect(() => {
+    if (selectedProject) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [selectedProject]);
+
+  useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         if (isFullscreenVideo) {
@@ -516,7 +528,7 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
       </div>
 
       {/* Interactive Detail Modal ("oi project e click korle bistarito ashbe") */}
-      {selectedProject && (
+      {selectedProject && createPortal(
         <div
           className="project-modal-backdrop"
           onClick={() => setSelectedProject(null)}
@@ -1053,7 +1065,8 @@ const FeaturedProjects: React.FC<FeaturedProjectsProps> = ({ refreshTrigger }) =
               </div>
             );
           })()}
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   );

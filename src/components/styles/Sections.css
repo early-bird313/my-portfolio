@@ -1074,12 +1074,14 @@
 .projects-slider-wrapper {
   position: relative;
   width: 100vw;
+  max-width: 100vw;
   left: 50%;
   right: 50%;
   margin-left: -50vw;
   margin-right: -50vw;
   overflow: hidden;
   padding: 1.5rem 0 3.5rem 0;
+  box-sizing: border-box;
 }
 
 .slider-fade-edge {
@@ -1381,14 +1383,25 @@
 .project-modal-backdrop {
   position: fixed;
   inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  max-width: 100vw;
+  height: 100%;
+  height: 100dvh;
   background: rgba(4, 4, 6, 0.88);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  z-index: 9999;
+  z-index: 99999;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  overflow-y: auto;
   animation: modalBackdropFade 0.25s ease-out;
 }
 
@@ -1402,12 +1415,16 @@
   max-width: 720px;
   width: 100%;
   max-height: 90vh;
+  max-height: 90dvh;
+  margin: auto;
   overflow-y: auto;
+  overflow-x: hidden;
   background: #0d0d12;
   border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 18px;
   box-shadow: 0 25px 80px rgba(0, 0, 0, 0.85), 0 0 40px rgba(204, 255, 0, 0.1);
   animation: modalDialogScale 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-sizing: border-box;
 }
 
 @keyframes modalDialogScale {
@@ -2483,6 +2500,15 @@
   }
 
   /* Projects Slider on Mobile */
+  .projects-slider-wrapper {
+    width: 100%;
+    max-width: 100%;
+    left: auto;
+    right: auto;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 1rem 0 2.5rem 0;
+  }
   .slider-card {
     width: 300px;
     min-width: 300px;
@@ -2494,12 +2520,23 @@
     font-size: 1.35rem;
   }
 
-  /* Modal Mobile */
+  /* Modal Mobile - 100% Centered & Responsive */
+  .project-modal-backdrop {
+    padding: 12px;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100vw;
+  }
   .project-modal-dialog {
-    width: 94vw;
-    max-height: 88vh;
+    width: 100%;
+    max-width: min(94vw, 560px);
+    max-height: 90vh;
+    max-height: 90dvh;
     border-radius: 14px;
-    margin: 1rem;
+    margin: 0 auto;
+    box-sizing: border-box;
   }
   .modal-thumbnail-banner {
     height: 220px;
@@ -2599,5 +2636,22 @@
     margin-top: 38px;
     aspect-ratio: 9 / 16;
     max-width: 96%;
+  }
+  .project-modal-backdrop {
+    padding: 8px;
+    box-sizing: border-box;
+  }
+  .project-modal-dialog {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    border-radius: 12px;
+    box-sizing: border-box;
+  }
+  .modal-content-body {
+    padding: 1.1rem 0.85rem;
+  }
+  .modal-project-title {
+    font-size: 1.45rem;
   }
 }
