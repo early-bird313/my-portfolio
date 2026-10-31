@@ -841,16 +841,40 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
 
             {/* Image / Thumbnail Section */}
             <div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
-                <label style={{ fontSize: "11px", color: (formData.category === "automation" || formData.category === "video" || formData.category === "design") ? config.colors.accent : "#888899", textTransform: "uppercase", fontWeight: (formData.category === "automation" || formData.category === "video" || formData.category === "design") ? 700 : 500 }}>
-                  {formData.category === "automation"
-                    ? "Project Thumbnail / Flow Banner (থাম্বনেইল / ব্যানার) *"
-                    : formData.category === "video"
-                    ? "Video Cover Thumbnail (ভিডিও কভার ছবি) *"
-                    : formData.category === "design"
-                    ? "🖼️ Main Cover Thumbnail (1000×1000 / Square 1:1 Recommended) *"
-                    : "Project Thumbnail / Image"}
-                </label>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px", flexWrap: "wrap", gap: "8px" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                  <label style={{ fontSize: "11px", color: (formData.category === "automation" || formData.category === "video" || formData.category === "design") ? config.colors.accent : "#888899", textTransform: "uppercase", fontWeight: (formData.category === "automation" || formData.category === "video" || formData.category === "design") ? 700 : 500 }}>
+                    {formData.category === "automation"
+                      ? "Project Thumbnail / Flow Banner (থাম্বনেইল / ব্যানার) *"
+                      : formData.category === "video"
+                      ? "Video Cover Thumbnail (ভিডিও কভার ছবি) *"
+                      : formData.category === "design"
+                      ? "🖼️ Main Cover Thumbnail (কভার থাম্বনেইল) *"
+                      : "Project Thumbnail / Image"}
+                  </label>
+
+                  {/* Prominent Size Badge */}
+                  <span
+                    style={{
+                      fontSize: "11px",
+                      padding: "2px 8px",
+                      borderRadius: "4px",
+                      backgroundColor: "rgba(204, 255, 0, 0.12)",
+                      border: "1px solid rgba(204, 255, 0, 0.35)",
+                      color: config.colors.accent,
+                      fontFamily: "var(--font-mono, monospace)",
+                      fontWeight: 700,
+                      letterSpacing: "0.5px",
+                    }}
+                  >
+                    {formData.category === "video"
+                      ? (formData.videoAspectRatio === "vertical" ? "📐 সাইজ: 1080 × 1920 (9:16 Reel)" : "📐 সাইজ: 1920 × 1080 বা 1280 × 720 (16:9)")
+                      : formData.category === "design"
+                      ? "📐 সাইজ: 1000 × 1000 (Square 1:1)"
+                      : "📐 সাইজ: 1920 × 1080 বা 1280 × 720 (16:9)"}
+                  </span>
+                </div>
+
                 <div style={{ display: "flex", gap: "6px" }}>
                   <button
                     type="button"
@@ -933,7 +957,30 @@ export const AdminStudioModal: React.FC<AdminStudioModalProps> = ({
                       <span style={{ fontSize: "13px", color: "#ffffff", fontWeight: 600 }}>
                         {isProcessingImage ? "Optimizing image..." : "Click or Drag & Drop image file"}
                       </span>
-                      <span style={{ fontSize: "11px", color: "#666", marginTop: "4px" }}>
+                      <div
+                        style={{
+                          marginTop: "6px",
+                          padding: "4px 12px",
+                          backgroundColor: "rgba(204, 255, 0, 0.1)",
+                          border: "1px solid rgba(204, 255, 0, 0.35)",
+                          borderRadius: "6px",
+                          fontSize: "11.5px",
+                          color: config.colors.accent,
+                          fontWeight: 700,
+                          fontFamily: "var(--font-mono, monospace)",
+                        }}
+                      >
+                        {formData.category === "video"
+                          ? (formData.videoAspectRatio === "vertical"
+                              ? "📐 রিকমেন্ডেড সাইজ: 1080 × 1920 px (9:16 Vertical Reel / Shorts)"
+                              : "📐 রিকমেন্ডেড সাইজ: 1920 × 1080 px বা 1280 × 720 px (16:9 Horizontal)")
+                          : formData.category === "design"
+                          ? "📐 রিকমেন্ডেড সাইজ: 1000 × 1000 px বা 1080 × 1080 px (Square 1:1)"
+                          : formData.category === "automation"
+                          ? "📐 রিকমেন্ডেড সাইজ: 1280 × 720 px বা 1920 × 1080 px (16:9 Flow Banner)"
+                          : "📐 রিকমেন্ডেড সাইজ: 1920 × 1080 px বা 1280 × 720 px (16:9 Desktop Preview)"}
+                      </div>
+                      <span style={{ fontSize: "11px", color: "#888899", marginTop: "5px" }}>
                         Supports PNG, JPG, WebP, SVG (Auto-optimized for instant loading)
                       </span>
                     </label>
