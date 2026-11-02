@@ -55,8 +55,11 @@
   transform: translateX(2px);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .social-sidebar {
-    display: none;
+    display: none !important;
+    pointer-events: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
   }
 }

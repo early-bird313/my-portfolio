@@ -50,7 +50,7 @@ const App = () => {
       )}
 
       {/* Main portfolio content blueprint */}
-      <main className={`main-content ${showSplash ? "hidden" : "visible"}`} style={{ position: "relative", zIndex: 10 }}>
+      <main className={`main-content ${showSplash ? "hidden" : "visible"}`} style={{ position: "relative", zIndex: 10, overflowX: "clip", maxWidth: "100vw", width: "100%" }}>
         <Navbar />
         <Hero />
         <About />
