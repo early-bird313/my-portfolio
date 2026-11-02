@@ -11,34 +11,42 @@ const SplashBanner = ({ onComplete }: SplashBannerProps) => {
   const [isLoaded, setIsLoaded] = useState<boolean>(false);
   const [imgLoaded, setImgLoaded] = useState<boolean>(false);
   const pillRef = useRef<HTMLDivElement>(null);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const animFrameRef = useRef<number | null>(null);
 
-  // Smooth 6.5 to 7-second progress timer (100 steps * 65ms = 6500ms = 6.5s)
+  // Precision 1.8s progress timer (guaranteed 2 to 3 seconds total splash wait time)
   useEffect(() => {
-    const enterTimer = setTimeout(() => setPhase("visible"), 50);
+    const enterTimer = setTimeout(() => setPhase("visible"), 30);
 
-    let progress = 0;
-    timerRef.current = setInterval(() => {
-      progress += 1;
+    const startTime = performance.now();
+    const duration = 1800; // 1.8 seconds for smooth 0% -> 100% counter
+
+    const step = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(100, Math.floor((elapsed / duration) * 100));
       setPercent(progress);
-      if (progress >= 100) {
-        if (timerRef.current) clearInterval(timerRef.current);
+
+      if (elapsed < duration) {
+        animFrameRef.current = requestAnimationFrame(step);
+      } else {
+        setPercent(100);
         setIsLoaded(true);
       }
-    }, 25);
+    };
+
+    animFrameRef.current = requestAnimationFrame(step);
 
     return () => {
       clearTimeout(enterTimer);
-      if (timerRef.current) clearInterval(timerRef.current);
+      if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     };
   }, []);
 
-  // When loading reaches 100%, show "WELCOME" briefly then auto-transition (3-4s total)
+  // When loading reaches 100%, show "WELCOME" briefly (300ms) then auto-transition
   useEffect(() => {
     if (isLoaded) {
       const exitTimer = setTimeout(() => {
         setPhase("exit");
-      }, 400);
+      }, 300);
 
       return () => clearTimeout(exitTimer);
     }
@@ -51,12 +59,12 @@ const SplashBanner = ({ onComplete }: SplashBannerProps) => {
   };
 
   const handleSkip = () => {
-    if (timerRef.current) clearInterval(timerRef.current);
+    if (animFrameRef.current) cancelAnimationFrame(animFrameRef.current);
     setPercent(100);
     setIsLoaded(true);
     setTimeout(() => {
       setPhase("exit");
-    }, 200);
+    }, 100);
   };
 
   const handlePillMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {

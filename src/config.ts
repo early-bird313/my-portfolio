@@ -55,7 +55,7 @@ export const config = {
   },
 
   /* ── Splash Timer (seconds) ────────────────────────────────── */
-  splashDuration: 5,
+  splashDuration: 2.5,
 
   /* ── Theme Colors (also mirrored in index.css as CSS vars) ── */
   colors: {
