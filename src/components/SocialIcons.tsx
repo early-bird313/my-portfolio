@@ -32,7 +32,7 @@ const SocialIcons = () => {
         </a>
 
         <a
-          href={config.social.facebook || "https://facebook.com"}
+          href={config.social.facebook || "https://www.facebook.com/aiwithminhaj"}
           target="_blank"
           rel="noopener noreferrer"
           className="social-icon-btn"
