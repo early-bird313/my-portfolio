@@ -8,7 +8,6 @@ import Journey from "./components/Journey";
 import FeaturedProjects from "./components/FeaturedProjects";
 import Contact from "./components/Contact";
 import Footer from "./components/Footer";
-import SocialIcons from "./components/SocialIcons";
 import GlobalParticleSculpture from "./components/GlobalParticleSculpture";
 import WhatsAppWidget from "./components/WhatsAppWidget";
 import { SecretAdminModal } from "./components/SecretAdminModal";
@@ -59,7 +58,6 @@ const App = () => {
         <FeaturedProjects refreshTrigger={refreshTrigger} />
         <Contact />
         <Footer />
-        <SocialIcons />
         <WhatsAppWidget />
       </main>
 

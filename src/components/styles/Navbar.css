@@ -183,30 +183,4 @@
   .nav-item {
     font-size: 1.05rem;
   }
-  .mobile-drawer-socials {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding-top: 1.8rem;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
-    margin-top: auto;
-  }
-  .mobile-social-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-    background: rgba(255, 255, 255, 0.04);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    color: #a1a1aa;
-    transition: all 0.2s ease;
-  }
-  .mobile-social-icon:hover {
-    color: var(--accent, #ccff00);
-    border-color: var(--accent, #ccff00);
-    background: rgba(204, 255, 0, 0.1);
-    transform: translateY(-2px);
-  }
 }

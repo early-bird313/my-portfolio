@@ -3,15 +3,9 @@
    =================================================================== */
 
 .social-sidebar {
-  position: fixed;
-  bottom: 2.5rem;
-  left: 5vw;
-  right: 5vw;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  z-index: 90;
-  pointer-events: none;
+  display: none !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
 }
 
 .social-links {
