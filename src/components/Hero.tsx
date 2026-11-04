@@ -1,6 +1,32 @@
+import { MouseEvent } from "react";
 import "./styles/Sections.css";
 
 const Hero = () => {
+  const handleJumpToProjects = (e: MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    const projectsEl = document.getElementById("projects");
+    if (projectsEl) {
+      const navbarOffset = 70;
+      const targetY = projectsEl.getBoundingClientRect().top + window.pageYOffset - navbarOffset;
+      window.scrollTo({
+        top: targetY,
+        behavior: "smooth"
+      });
+
+      // Subtle gentle focus pulse on filter bar once scrolled
+      setTimeout(() => {
+        const filterBar = document.querySelector(".projects-filter-bar");
+        if (filterBar) {
+          (filterBar as HTMLElement).style.transition = "transform 0.35s ease, filter 0.35s ease";
+          (filterBar as HTMLElement).style.transform = "scale(1.02)";
+          setTimeout(() => {
+            (filterBar as HTMLElement).style.transform = "scale(1)";
+          }, 380);
+        }
+      }, 650);
+    }
+  };
+
   return (
     <section className="hero-prototype-section" id="hero">
       <div className="hero-content-wrap">
@@ -19,9 +45,23 @@ const Hero = () => {
 
         {/* Action Buttons */}
         <div className="hero-actions">
-          <a href="#projects" className="btn-primary-glow">
-            <span>Explore Featured Work</span>
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.4">
+          <a
+            href="#projects"
+            className="btn-jump-projects"
+            onClick={handleJumpToProjects}
+            title="Jump directly to live projects"
+          >
+            <span className="btn-jump-lightning">⚡</span>
+            <span className="btn-jump-text">Jump Directly to Projects</span>
+            <svg
+              className="btn-bounce-arrow"
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+            >
               <path d="M7 13l5 5 5-5M12 4v14" />
             </svg>
           </a>
